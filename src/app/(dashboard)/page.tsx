@@ -67,47 +67,55 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.totalRules")}</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalRules}</div>
-          </CardContent>
-        </Card>
+        <Link href="/rules">
+          <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{t("dashboard.totalRules")}</CardTitle>
+              <Mail className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalRules}</div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.active")}</CardTitle>
-            <MailCheck className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeRules}</div>
-          </CardContent>
-        </Card>
+        <Link href="/rules?filter=active">
+          <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{t("dashboard.active")}</CardTitle>
+              <MailCheck className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{activeRules}</div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.inactive")}</CardTitle>
-            <MailX className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{inactiveRules}</div>
-          </CardContent>
-        </Card>
+        <Link href="/rules?filter=inactive">
+          <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{t("dashboard.inactive")}</CardTitle>
+              <MailX className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{inactiveRules}</div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t("dashboard.catchAll")}</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge variant={catchAllEnabled ? "default" : "secondary"}>
-              {catchAllEnabled ? t("common.enabled") : t("common.disabled")}
-            </Badge>
-          </CardContent>
-        </Card>
+        <Link href="/settings">
+          <Card className="cursor-pointer hover:border-primary/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{t("dashboard.catchAll")}</CardTitle>
+              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <Badge variant={catchAllEnabled ? "default" : "secondary"}>
+                {catchAllEnabled ? t("common.enabled") : t("common.disabled")}
+              </Badge>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <Card>

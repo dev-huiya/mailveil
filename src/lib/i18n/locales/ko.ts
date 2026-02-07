@@ -23,6 +23,7 @@ const ko: typeof en = {
   "common.search": "검색",
   "common.copy": "복사",
   "common.refresh": "새로고침",
+  "common.all": "전체",
 
   // Auth
   "auth.title": "MailVeil",

@@ -21,6 +21,7 @@ const en = {
   "common.search": "Search",
   "common.copy": "Copy",
   "common.refresh": "Refresh",
+  "common.all": "All",
 
   // Auth
   "auth.title": "MailVeil",

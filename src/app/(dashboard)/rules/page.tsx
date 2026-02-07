@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -41,10 +42,42 @@ import { useI18n } from "@/hooks/use-i18n";
 import { useRules } from "@/hooks/use-rules";
 import type { EmailRoutingRule } from "@/types/cloudflare";
 
+type StatusFilter = "all" | "active" | "inactive";
+
 export default function RulesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-32" />
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <RulesContent />
+    </Suspense>
+  );
+}
+
+function RulesContent() {
   const { t } = useI18n();
   const { rules, setRules, loading } = useRules();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const filterParam = searchParams.get("filter") as StatusFilter | null;
+  const statusFilter: StatusFilter = filterParam === "active" || filterParam === "inactive" ? filterParam : "all";
   const [search, setSearch] = useState("");
+
+  const setStatusFilter = (filter: StatusFilter) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (filter === "all") params.delete("filter");
+    else params.set("filter", filter);
+    router.replace(`/rules${params.size ? `?${params}` : ""}`);
+  };
   const [deleteTarget, setDeleteTarget] = useState<EmailRoutingRule | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [editingRule, setEditingRule] = useState<string | null>(null);
@@ -160,11 +193,16 @@ export default function RulesPage() {
     }
   };
 
-  const filteredRules = rules.filter(
-    (rule) =>
-      rule.name.toLowerCase().includes(search.toLowerCase()) ||
-      rule.matchers[0]?.value?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredRules = rules.filter((rule) => {
+    if (statusFilter === "active" && !rule.enabled) return false;
+    if (statusFilter === "inactive" && rule.enabled) return false;
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      rule.name.toLowerCase().includes(q) ||
+      rule.matchers[0]?.value?.toLowerCase().includes(q)
+    );
+  });
 
   if (loading) {
     return (
@@ -198,6 +236,24 @@ export default function RulesPage() {
           </Button>
         </div>
       </div>
+
+      {rules.length > 0 && (
+        <div className="flex gap-2">
+          {(["all", "active", "inactive"] as const).map((f) => (
+            <Button
+              key={f}
+              variant={statusFilter === f ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter(f)}
+            >
+              {f === "all" ? t("common.all") : f === "active" ? t("common.active") : t("common.inactive")}
+              {f === "all" && ` (${rules.length})`}
+              {f === "active" && ` (${rules.filter((r) => r.enabled).length})`}
+              {f === "inactive" && ` (${rules.filter((r) => !r.enabled).length})`}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {rules.length > 0 && (
         <div className="relative">
@@ -339,7 +395,7 @@ export default function RulesPage() {
                       {editingRule === rule.id ? (
                         <div className="flex items-center gap-1">
                           <Input
-                            ref={editInputRef}
+                            autoFocus
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                             onKeyDown={(e) => {
