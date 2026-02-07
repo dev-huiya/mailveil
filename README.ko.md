@@ -55,16 +55,26 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 `.env` 파일 생성:
 
 ```env
-AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유, 6자리 권장)
+AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유)
 CF_API_TOKEN=your-cloudflare-api-token   # Cloudflare API 토큰
 CF_ZONE_ID=your-zone-id                 # Cloudflare Zone ID
 CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
 NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # 이메일 도메인
 ```
 
-`docker-compose.yml` 파일 생성:
+실행:
+
+```bash
+docker run -d -p 3000:3000 --env-file .env --restart unless-stopped huiya/mailveil
+```
+
+**http://localhost:3000** 에 접속하여 PIN을 입력하면 됩니다.
+
+<details>
+<summary>Docker Compose 사용</summary>
 
 ```yaml
+# docker-compose.yml
 services:
   mailveil:
     image: huiya/mailveil:latest
@@ -75,19 +85,8 @@ services:
     restart: unless-stopped
 ```
 
-실행:
-
 ```bash
 docker compose up -d
-```
-
-**http://localhost:3000** 에 접속하여 PIN을 입력하면 됩니다.
-
-<details>
-<summary>Docker Compose 없이 실행</summary>
-
-```bash
-docker run -d -p 3000:3000 --env-file .env huiya/mailveil:latest
 ```
 
 </details>

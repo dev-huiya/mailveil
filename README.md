@@ -62,9 +62,19 @@ CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
 NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # Your email domain
 ```
 
-Create a `docker-compose.yml`:
+Run:
+
+```bash
+docker run -d -p 3000:3000 --env-file .env --restart unless-stopped huiya/mailveil
+```
+
+Open **http://localhost:3000** and enter your PIN. That's it.
+
+<details>
+<summary>Using Docker Compose</summary>
 
 ```yaml
+# docker-compose.yml
 services:
   mailveil:
     image: huiya/mailveil:latest
@@ -75,19 +85,8 @@ services:
     restart: unless-stopped
 ```
 
-Run:
-
 ```bash
 docker compose up -d
-```
-
-Open **http://localhost:3000** and enter your PIN. That's it.
-
-<details>
-<summary>Docker without Compose</summary>
-
-```bash
-docker run -d -p 3000:3000 --env-file .env huiya/mailveil:latest
 ```
 
 </details>
