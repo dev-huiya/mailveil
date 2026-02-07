@@ -1,13 +1,39 @@
-const attempts = new Map<string, { count: number; firstAttempt: number }>();
-
 const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const MAX_ENTRIES = 1000;
+
+// Use globalThis to prevent HMR from creating duplicate Maps/intervals
+const RATE_LIMIT_KEY = "__rateLimit" as const;
+
+interface RateLimitStore {
+  attempts: Map<string, { count: number; firstAttempt: number }>;
+  cleanupTimer: ReturnType<typeof setInterval> | null;
+}
+
+function getStore(): RateLimitStore {
+  const g = globalThis as unknown as Record<string, RateLimitStore>;
+  if (!g[RATE_LIMIT_KEY]) {
+    g[RATE_LIMIT_KEY] = { attempts: new Map(), cleanupTimer: null };
+  }
+  return g[RATE_LIMIT_KEY];
+}
+
+function cleanupExpired() {
+  const { attempts } = getStore();
+  const now = Date.now();
+  for (const [ip, record] of attempts) {
+    if (now - record.firstAttempt > WINDOW_MS) {
+      attempts.delete(ip);
+    }
+  }
+}
 
 export function checkRateLimit(ip: string): {
   allowed: boolean;
   remaining: number;
   retryAfterSeconds: number;
 } {
+  const { attempts } = getStore();
   const now = Date.now();
   const record = attempts.get(ip);
 
@@ -30,10 +56,20 @@ export function checkRateLimit(ip: string): {
 }
 
 export function recordFailedAttempt(ip: string): void {
+  const { attempts } = getStore();
   const now = Date.now();
   const record = attempts.get(ip);
 
   if (!record || now - record.firstAttempt > WINDOW_MS) {
+    // Evict oldest entries if at capacity
+    if (attempts.size >= MAX_ENTRIES) {
+      cleanupExpired();
+      // If still at capacity after cleanup, drop oldest
+      if (attempts.size >= MAX_ENTRIES) {
+        const oldest = attempts.keys().next().value;
+        if (oldest) attempts.delete(oldest);
+      }
+    }
     attempts.set(ip, { count: 1, firstAttempt: now });
   } else {
     record.count++;
@@ -41,17 +77,13 @@ export function recordFailedAttempt(ip: string): void {
 }
 
 export function clearAttempts(ip: string): void {
-  attempts.delete(ip);
+  getStore().attempts.delete(ip);
 }
 
-// Periodic cleanup of expired entries (every 30 minutes)
+// Periodic cleanup - safe against HMR re-registration
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [ip, record] of attempts) {
-      if (now - record.firstAttempt > WINDOW_MS) {
-        attempts.delete(ip);
-      }
-    }
-  }, 30 * 60 * 1000);
+  const store = getStore();
+  if (!store.cleanupTimer) {
+    store.cleanupTimer = setInterval(cleanupExpired, 30 * 60 * 1000);
+  }
 }
