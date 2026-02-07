@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,14 +49,6 @@ export default function RulesPage() {
   const [deleting, setDeleting] = useState(false);
   const [editingRule, setEditingRule] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const editInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editingRule && editInputRef.current) {
-      editInputRef.current.focus();
-      editInputRef.current.select();
-    }
-  }, [editingRule]);
 
   const handleToggle = async (rule: EmailRoutingRule) => {
     try {
@@ -242,7 +234,7 @@ export default function RulesPage() {
                     {editingRule === rule.id ? (
                       <div className="flex items-center gap-1 flex-1 mr-2">
                         <Input
-                          ref={editInputRef}
+                          autoFocus
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
                           onKeyDown={(e) => {

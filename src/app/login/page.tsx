@@ -80,7 +80,7 @@ export default function LoginPage() {
 
   if (isMobile) {
     return (
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col min-h-dvh bg-background">
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <div className="flex flex-col items-center gap-2 mb-8">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -105,7 +105,7 @@ export default function LoginPage() {
           )}
         </div>
 
-        <div className="px-4 pb-4 pt-2" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+        <div className="px-4 pb-6 pt-2" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
           <ShuffleKeypad
             onDigit={handleMobileDigit}
             onBackspace={handleBackspace}
@@ -117,7 +117,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-dvh flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
