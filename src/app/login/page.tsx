@@ -105,7 +105,7 @@ export default function LoginPage() {
           )}
         </div>
 
-        <div className="px-4 pb-6 pt-2">
+        <div className="px-4 pb-4 pt-2" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
           <ShuffleKeypad
             onDigit={handleMobileDigit}
             onBackspace={handleBackspace}

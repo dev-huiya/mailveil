@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Delete, Shuffle } from "lucide-react";
 
@@ -24,8 +24,9 @@ export function ShuffleKeypad({
   onBackspace,
   disabled,
 }: ShuffleKeypadProps) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const digits = useMemo(() => shuffleArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]), [disabled]);
+  const [digits, setDigits] = useState(() =>
+    shuffleArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
+  );
 
   const handleDigit = useCallback(
     (digit: string) => {
@@ -34,7 +35,10 @@ export function ShuffleKeypad({
     [disabled, onDigit]
   );
 
-  // 10 digits -> 4 cols x 3 rows: row1(4) + row2(4) + row3(backspace, digit, digit, shuffle-icon)
+  const handleShuffle = useCallback(() => {
+    setDigits(shuffleArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]));
+  }, []);
+
   const row1 = digits.slice(0, 4);
   const row2 = digits.slice(4, 8);
   const row3 = digits.slice(8, 10);
@@ -65,11 +69,11 @@ export function ShuffleKeypad({
       ))}
       <Button
         variant="ghost"
-        className="h-14"
-        onClick={onBackspace}
+        className="h-14 text-muted-foreground"
+        onClick={handleShuffle}
         disabled={disabled}
       >
-        <Delete className="h-6 w-6" />
+        <Shuffle className="h-5 w-5" />
       </Button>
       {row3.map((digit) => (
         <Button
@@ -82,9 +86,14 @@ export function ShuffleKeypad({
           {digit}
         </Button>
       ))}
-      <div className="flex items-center justify-center text-muted-foreground">
-        <Shuffle className="h-4 w-4" />
-      </div>
+      <Button
+        variant="ghost"
+        className="h-14"
+        onClick={onBackspace}
+        disabled={disabled}
+      >
+        <Delete className="h-6 w-6" />
+      </Button>
     </div>
   );
 }
