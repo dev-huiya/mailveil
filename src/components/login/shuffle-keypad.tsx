@@ -2,7 +2,7 @@
 
 import { useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Delete } from "lucide-react";
+import { Delete, Shuffle } from "lucide-react";
 
 interface ShuffleKeypadProps {
   onDigit: (digit: string) => void;
@@ -24,7 +24,6 @@ export function ShuffleKeypad({
   onBackspace,
   disabled,
 }: ShuffleKeypadProps) {
-  // Shuffle digits on every render (when PIN value changes, parent re-renders)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const digits = useMemo(() => shuffleArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]), [disabled]);
 
@@ -35,13 +34,17 @@ export function ShuffleKeypad({
     [disabled, onDigit]
   );
 
+  // 10 digits -> 4 cols x 3 rows: row1(4) + row2(4) + row3(backspace, digit, digit, shuffle-icon)
+  const row1 = digits.slice(0, 4);
+  const row2 = digits.slice(4, 8);
+  const row3 = digits.slice(8, 10);
+
   return (
-    <div className="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
-      {digits.slice(0, 9).map((digit) => (
+    <div className="grid grid-cols-4 gap-2 w-full">
+      {row1.map((digit) => (
         <Button
-          key={digit}
+          key={`r1-${digit}`}
           variant="outline"
-          size="lg"
           className="h-14 text-xl font-semibold"
           onClick={() => handleDigit(digit)}
           disabled={disabled}
@@ -49,25 +52,39 @@ export function ShuffleKeypad({
           {digit}
         </Button>
       ))}
-      <div />
-      <Button
-        variant="outline"
-        size="lg"
-        className="h-14 text-xl font-semibold"
-        onClick={() => handleDigit(digits[9])}
-        disabled={disabled}
-      >
-        {digits[9]}
-      </Button>
+      {row2.map((digit) => (
+        <Button
+          key={`r2-${digit}`}
+          variant="outline"
+          className="h-14 text-xl font-semibold"
+          onClick={() => handleDigit(digit)}
+          disabled={disabled}
+        >
+          {digit}
+        </Button>
+      ))}
       <Button
         variant="ghost"
-        size="lg"
         className="h-14"
         onClick={onBackspace}
         disabled={disabled}
       >
         <Delete className="h-6 w-6" />
       </Button>
+      {row3.map((digit) => (
+        <Button
+          key={`r3-${digit}`}
+          variant="outline"
+          className="h-14 text-xl font-semibold"
+          onClick={() => handleDigit(digit)}
+          disabled={disabled}
+        >
+          {digit}
+        </Button>
+      ))}
+      <div className="flex items-center justify-center text-muted-foreground">
+        <Shuffle className="h-4 w-4" />
+      </div>
     </div>
   );
 }

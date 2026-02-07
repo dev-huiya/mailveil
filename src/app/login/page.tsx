@@ -78,6 +78,44 @@ export default function LoginPage() {
 
   if (!ready) return null;
 
+  if (isMobile) {
+    return (
+      <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <div className="flex flex-col items-center gap-2 mb-8">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Shield className="w-6 h-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold">{t("auth.title")}</h1>
+            <p className="text-muted-foreground text-sm">
+              {t("auth.subtitle")}
+            </p>
+          </div>
+
+          <PinInput
+            length={pinLength}
+            value={pin}
+            onChange={setPin}
+            onComplete={handleSubmit}
+            disabled={loading}
+          />
+
+          {error && (
+            <p className="text-center text-sm text-destructive mt-4">{error}</p>
+          )}
+        </div>
+
+        <div className="px-4 pb-6 pt-2">
+          <ShuffleKeypad
+            onDigit={handleMobileDigit}
+            onBackspace={handleBackspace}
+            disabled={loading}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
@@ -103,19 +141,9 @@ export default function LoginPage() {
             <p className="text-center text-sm text-destructive">{error}</p>
           )}
 
-          {isMobile && (
-            <ShuffleKeypad
-              onDigit={handleMobileDigit}
-              onBackspace={handleBackspace}
-              disabled={loading}
-            />
-          )}
-
-          {!isMobile && (
-            <p className="text-center text-xs text-muted-foreground">
-              {t("auth.keyboardHint")}
-            </p>
-          )}
+          <p className="text-center text-xs text-muted-foreground">
+            {t("auth.keyboardHint")}
+          </p>
         </CardContent>
       </Card>
     </div>
