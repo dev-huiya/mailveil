@@ -27,7 +27,7 @@ export function Sidebar() {
   const { t } = useI18n();
 
   return (
-    <aside className="hidden md:flex h-screen w-64 flex-col border-r bg-card">
+    <aside className="hidden md:flex h-dvh w-64 flex-col border-r bg-card pt-safe pb-safe">
       <div className="flex h-14 items-center gap-2 border-b px-6">
         <Shield className="h-5 w-5 text-primary" />
         <span className="font-semibold text-lg">{t("common.appName")}</span>

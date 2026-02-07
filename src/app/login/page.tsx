@@ -80,7 +80,7 @@ export default function LoginPage() {
 
   if (isMobile) {
     return (
-      <div className="flex flex-col min-h-dvh bg-background">
+      <div className="flex flex-col min-h-dvh bg-background pt-safe">
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <div className="flex flex-col items-center gap-2 mb-8">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">

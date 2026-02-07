@@ -39,7 +39,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="left" className="w-64 p-0 pt-safe pb-safe">
         <SheetHeader className="flex h-14 flex-row items-center gap-2 border-b px-6">
           <Shield className="h-5 w-5 text-primary" />
           <SheetTitle className="text-lg">{t("common.appName")}</SheetTitle>
