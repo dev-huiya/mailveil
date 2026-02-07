@@ -1,3 +1,5 @@
+**[English](README.md)** | **[한국어](README.ko.md)**
+
 # MailVeil
 
 Cloudflare Email Routing management UI for creating and managing virtual email addresses with category-based word generation.
