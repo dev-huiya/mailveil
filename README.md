@@ -12,7 +12,7 @@ and control destination addresses — without ever touching the Cloudflare dashb
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ed?logo=docker&logoColor=white)](#quick-start)
+[![Docker](https://img.shields.io/docker/pulls/huiya/mailveil?logo=docker&logoColor=white)](https://hub.docker.com/r/huiya/mailveil)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -58,17 +58,9 @@ and control destination addresses — without ever touching the Cloudflare dashb
 - A Cloudflare account with [Email Routing](https://developers.cloudflare.com/email-routing/) enabled on your domain
 - An [API token](#cloudflare-api-token-permissions) with Email Routing edit permissions
 - Your **Zone ID** and **Account ID** ([where to find them](#getting-cloudflare-credentials))
-- [Docker](https://www.docker.com/) (recommended) **or** [Node.js](https://nodejs.org/) 20+
+- [Docker](https://www.docker.com/) (recommended) — no build required
 
-### 1. Clone & configure
-
-```bash
-git clone https://github.com/your-username/mailveil.git
-cd mailveil
-cp .env.example .env
-```
-
-Edit `.env`:
+Create a `.env` file:
 
 ```env
 AUTH_PIN=000000                          # Login PIN (any length)
@@ -78,36 +70,49 @@ CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
 NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # Your email domain
 ```
 
-### 2. Run with Docker (recommended)
+Create a `docker-compose.yml`:
+
+```yaml
+services:
+  mailveil:
+    image: huiya/mailveil:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+```
+
+Run:
 
 ```bash
 docker compose up -d
 ```
 
-Open **http://localhost:3000** and enter your PIN.
-
-That's it. The image builds automatically on first run.
+Open **http://localhost:3000** and enter your PIN. That's it.
 
 <details>
 <summary>Docker without Compose</summary>
 
 ```bash
-docker build -t mailveil .
-docker run -d -p 3000:3000 --env-file .env mailveil
+docker run -d -p 3000:3000 --env-file .env huiya/mailveil:latest
 ```
 
 </details>
 
 <details>
-<summary>Run without Docker (Node.js)</summary>
+<summary>Build from source (Node.js 20+)</summary>
 
 ```bash
+git clone https://github.com/huiya/mailveil.git
+cd mailveil
+cp .env.example .env
+# edit .env (see above)
+
 pnpm install
 pnpm build
 pnpm start
 ```
-
-Requires Node.js 20+ (24 recommended).
 
 </details>
 

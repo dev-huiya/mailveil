@@ -1,6 +1,6 @@
 services:
   mailveil:
-    build: .
+    image: huiya/mailveil:latest
     ports:
       - "3000:3000"
     env_file:

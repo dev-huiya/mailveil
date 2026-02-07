@@ -12,7 +12,7 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ed?logo=docker&logoColor=white)](#빠른-시작)
+[![Docker](https://img.shields.io/docker/pulls/huiya/mailveil?logo=docker&logoColor=white)](https://hub.docker.com/r/huiya/mailveil)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -58,17 +58,9 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 - [Email Routing](https://developers.cloudflare.com/email-routing/)이 활성화된 Cloudflare 도메인
 - Email Routing 편집 권한이 있는 [API 토큰](#cloudflare-api-토큰-권한)
 - **Zone ID**와 **Account ID** ([확인 방법](#cloudflare-인증-정보-얻기))
-- [Docker](https://www.docker.com/) (권장) **또는** [Node.js](https://nodejs.org/) 20+
+- [Docker](https://www.docker.com/) (권장) — 빌드 필요 없음
 
-### 1. 클론 & 환경변수 설정
-
-```bash
-git clone https://github.com/your-username/mailveil.git
-cd mailveil
-cp .env.example .env
-```
-
-`.env` 편집:
+`.env` 파일 생성:
 
 ```env
 AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유)
@@ -78,7 +70,20 @@ CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
 NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # 이메일 도메인
 ```
 
-### 2. Docker로 실행 (권장)
+`docker-compose.yml` 파일 생성:
+
+```yaml
+services:
+  mailveil:
+    image: huiya/mailveil:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+```
+
+실행:
 
 ```bash
 docker compose up -d
@@ -86,28 +91,28 @@ docker compose up -d
 
 **http://localhost:3000** 에 접속하여 PIN을 입력하면 됩니다.
 
-첫 실행 시 이미지가 자동으로 빌드됩니다.
-
 <details>
 <summary>Docker Compose 없이 실행</summary>
 
 ```bash
-docker build -t mailveil .
-docker run -d -p 3000:3000 --env-file .env mailveil
+docker run -d -p 3000:3000 --env-file .env huiya/mailveil:latest
 ```
 
 </details>
 
 <details>
-<summary>Docker 없이 실행 (Node.js)</summary>
+<summary>소스에서 직접 빌드 (Node.js 20+)</summary>
 
 ```bash
+git clone https://github.com/huiya/mailveil.git
+cd mailveil
+cp .env.example .env
+# .env 편집 (위 참고)
+
 pnpm install
 pnpm build
 pnpm start
 ```
-
-Node.js 20 이상 필요 (24 권장).
 
 </details>
 
