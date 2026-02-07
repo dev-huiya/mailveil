@@ -118,6 +118,11 @@ export function GeneratorForm() {
   if (isMobile) {
     return (
       <div className="space-y-5">
+        {/* Category tiles */}
+        {!manualMode && (
+          <CategorySelector selected={category} onSelect={handleCategoryChange} />
+        )}
+
         {/* Email preview hero */}
         {!manualMode && (
           <EmailPreview
@@ -126,11 +131,6 @@ export function GeneratorForm() {
             categoryName={t(`category.${generated.category.id}` as TranslationKey)}
             onRefresh={handleRefresh}
           />
-        )}
-
-        {/* Category chips */}
-        {!manualMode && (
-          <CategorySelector selected={category} onSelect={handleCategoryChange} />
         )}
 
         {/* Manual mode toggle */}
