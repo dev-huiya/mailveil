@@ -1,9 +1,7 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "fallback-secret-do-not-use-in-production"
-);
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const AUTH_PIN = process.env.AUTH_PIN || "000000";
 

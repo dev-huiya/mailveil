@@ -53,7 +53,6 @@ Edit `.env` with your values:
 
 ```env
 AUTH_PIN=000000                          # Login PIN (any length)
-JWT_SECRET=your-secret-key-min-32-chars  # JWT signing key (32+ characters)
 CF_API_TOKEN=your-cloudflare-api-token   # Cloudflare API token
 CF_ZONE_ID=your-zone-id                 # Cloudflare Zone ID
 CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
@@ -98,11 +97,11 @@ The app will be available at `http://localhost:3000`.
 | Variable | Required | Description |
 |---|---|---|
 | `AUTH_PIN` | Yes | Numeric PIN for login authentication. Can be any length — the UI adapts automatically. |
-| `JWT_SECRET` | Yes | Secret key for JWT signing. Use a strong random string (32+ characters). |
 | `CF_API_TOKEN` | Yes | Cloudflare API token with Email Routing edit permissions. |
 | `CF_ZONE_ID` | Yes | Cloudflare Zone ID — identifies which domain's email routing rules to manage. |
 | `CF_ACCOUNT_ID` | Yes | Cloudflare Account ID — identifies which account's destination addresses to manage. |
 | `NEXT_PUBLIC_EMAIL_DOMAIN` | Yes | The email domain for generated addresses (e.g., `example.com`). |
+| `JWT_SECRET` | No | JWT signing key. **Auto-generated on every startup if not set.** Set this only if you want sessions to survive server restarts. |
 
 > **Why are all three Cloudflare values needed?**
 >
