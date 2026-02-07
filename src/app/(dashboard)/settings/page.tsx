@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useI18n } from "@/hooks/use-i18n";
 import type { CatchAllRule, Destination, EmailRoutingSettings } from "@/types/cloudflare";
 
 export default function SettingsPage() {
+  const { t } = useI18n();
   const [settings, setSettings] = useState<EmailRoutingSettings | null>(null);
   const [catchAll, setCatchAll] = useState<CatchAllRule | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -51,11 +53,11 @@ export default function SettingsPage() {
         setCatchAllDest(action?.value?.[0] || "");
       }
     } catch {
-      toast.error("Failed to load settings");
+      toast.error(t("settings.loadError"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -73,9 +75,9 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error();
 
       setSettings((prev) => (prev ? { ...prev, enabled } : null));
-      toast.success(`Email routing ${enabled ? "enabled" : "disabled"}`);
+      toast.success(enabled ? t("settings.routingEnabled") : t("settings.routingDisabled"));
     } catch {
-      toast.error("Failed to update email routing");
+      toast.error(t("settings.updateRoutingError"));
     } finally {
       setUpdating(false);
     }
@@ -101,9 +103,9 @@ export default function SettingsPage() {
 
       if (!res.ok) throw new Error();
 
-      toast.success("Catch-all rule updated");
+      toast.success(t("settings.catchAllUpdated"));
     } catch {
-      toast.error("Failed to update catch-all rule");
+      toast.error(t("settings.updateCatchAllError"));
     } finally {
       setUpdating(false);
     }
@@ -112,7 +114,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
         <Skeleton className="h-48" />
         <Skeleton className="h-64" />
       </div>
@@ -121,21 +123,21 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle>Email Routing</CardTitle>
+          <CardTitle>{t("settings.emailRouting")}</CardTitle>
           <CardDescription>
-            Enable or disable email routing for your domain.
+            {t("settings.emailRoutingDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Email Routing</Label>
+              <Label>{t("settings.emailRouting")}</Label>
               <p className="text-sm text-muted-foreground">
-                Status: {settings?.status || "Unknown"}
+                {t("settings.status", { status: settings?.status || "Unknown" })}
               </p>
             </div>
             <Switch
@@ -149,14 +151,14 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Catch-All Rule</CardTitle>
+          <CardTitle>{t("settings.catchAll")}</CardTitle>
           <CardDescription>
-            Handle emails that don&apos;t match any specific rule.
+            {t("settings.catchAllDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <Label>Enable Catch-All</Label>
+            <Label>{t("settings.enableCatchAll")}</Label>
             <Switch
               checked={catchAllEnabled}
               onCheckedChange={setCatchAllEnabled}
@@ -168,7 +170,7 @@ export default function SettingsPage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Action</Label>
+              <Label>{t("settings.action")}</Label>
               <Select
                 value={catchAllAction}
                 onValueChange={(v) => setCatchAllAction(v as "forward" | "drop")}
@@ -178,22 +180,22 @@ export default function SettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="forward">Forward</SelectItem>
-                  <SelectItem value="drop">Drop</SelectItem>
+                  <SelectItem value="forward">{t("settings.forward")}</SelectItem>
+                  <SelectItem value="drop">{t("settings.drop")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {catchAllAction === "forward" && (
               <div className="space-y-2">
-                <Label>Forward To</Label>
+                <Label>{t("settings.forwardTo")}</Label>
                 <Select
                   value={catchAllDest}
                   onValueChange={setCatchAllDest}
                   disabled={updating || !catchAllEnabled}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select destination" />
+                    <SelectValue placeholder={t("settings.selectDestination")} />
                   </SelectTrigger>
                   <SelectContent>
                     {destinations
@@ -216,7 +218,7 @@ export default function SettingsPage() {
               (catchAllAction === "forward" && !catchAllDest && catchAllEnabled)
             }
           >
-            {updating ? "Saving..." : "Save Changes"}
+            {updating ? t("common.saving") : t("common.save")}
           </Button>
         </CardContent>
       </Card>

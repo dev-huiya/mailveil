@@ -9,13 +9,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, LogOut, Menu } from "lucide-react";
+import { Moon, Sun, LogOut, Menu, Globe } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { useState } from "react";
+import { useI18n } from "@/hooks/use-i18n";
+import { locales, localeNames, type Locale } from "@/lib/i18n/translations";
 
 export function Header() {
   const router = useRouter();
   const { setTheme } = useTheme();
+  const { t, locale, setLocale } = useI18n();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -39,27 +42,47 @@ export function Header() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
+            <Globe className="h-4 w-4" />
+            <span className="sr-only">Language</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {locales.map((loc) => (
+            <DropdownMenuItem
+              key={loc}
+              onClick={() => setLocale(loc as Locale)}
+              className={locale === loc ? "font-semibold" : ""}
+            >
+              {localeNames[loc]}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">{t("theme.toggle")}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setTheme("light")}>
-            Light
+            {t("theme.light")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme("dark")}>
-            Dark
+            {t("theme.dark")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme("system")}>
-            System
+            {t("theme.system")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Button variant="ghost" size="icon" onClick={handleLogout}>
         <LogOut className="h-4 w-4" />
-        <span className="sr-only">Logout</span>
+        <span className="sr-only">{t("auth.logout")}</span>
       </Button>
 
       <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />

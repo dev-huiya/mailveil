@@ -27,9 +27,11 @@ import { Plus, Trash2, Star, StarOff, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard, formatDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useI18n } from "@/hooks/use-i18n";
 import type { Destination } from "@/types/cloudflare";
 
 export default function DestinationsPage() {
+  const { t } = useI18n();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [newEmail, setNewEmail] = useState("");
@@ -51,11 +53,11 @@ export default function DestinationsPage() {
       const data = await res.json();
       setDestinations(data.result || []);
     } catch {
-      toast.error("Failed to load destinations");
+      toast.error(t("destinations.loadError"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchDestinations();
@@ -74,12 +76,12 @@ export default function DestinationsPage() {
 
       if (!res.ok) throw new Error();
 
-      toast.success("Verification email sent. Check your inbox.");
+      toast.success(t("destinations.verificationSent"));
       setNewEmail("");
       setAddOpen(false);
       fetchDestinations();
     } catch {
-      toast.error("Failed to add destination");
+      toast.error(t("destinations.addError"));
     } finally {
       setAdding(false);
     }
@@ -104,9 +106,9 @@ export default function DestinationsPage() {
         setDefaultDestination("");
         localStorage.removeItem("mailveil-default-destination");
       }
-      toast.success("Destination deleted");
+      toast.success(t("destinations.deleted"));
     } catch {
-      toast.error("Failed to delete destination");
+      toast.error(t("destinations.deleteError"));
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
@@ -117,24 +119,24 @@ export default function DestinationsPage() {
     if (defaultDestination === email) {
       setDefaultDestination("");
       localStorage.removeItem("mailveil-default-destination");
-      toast.success("Default destination cleared");
+      toast.success(t("destinations.defaultCleared"));
     } else {
       setDefaultDestination(email);
       localStorage.setItem("mailveil-default-destination", email);
-      toast.success(`Set ${email} as default destination`);
+      toast.success(t("destinations.defaultSet", { email }));
     }
   };
 
   const handleCopy = async (text: string) => {
     const ok = await copyToClipboard(text);
-    if (ok) toast.success("Copied to clipboard");
-    else toast.error("Failed to copy");
+    if (ok) toast.success(t("common.copied"));
+    else toast.error(t("common.copyFailed"));
   };
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Destinations</h1>
+        <h1 className="text-2xl font-bold">{t("destinations.title")}</h1>
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-16" />
@@ -147,24 +149,24 @@ export default function DestinationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Destinations</h1>
+        <h1 className="text-2xl font-bold">{t("destinations.title")}</h1>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />
-              Add
+              {t("common.add")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Destination</DialogTitle>
+              <DialogTitle>{t("destinations.addTitle")}</DialogTitle>
               <DialogDescription>
-                A verification email will be sent to confirm the address.
+                {t("destinations.addDescription")}
               </DialogDescription>
             </DialogHeader>
             <Input
               type="email"
-              placeholder="email@example.com"
+              placeholder={t("destinations.emailPlaceholder")}
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
@@ -175,10 +177,10 @@ export default function DestinationsPage() {
                 onClick={() => setAddOpen(false)}
                 disabled={adding}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button onClick={handleAdd} disabled={adding || !newEmail}>
-                {adding ? "Adding..." : "Add"}
+                {adding ? t("common.adding") : t("common.add")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -188,10 +190,10 @@ export default function DestinationsPage() {
       {destinations.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">No destinations yet</p>
+            <p className="text-muted-foreground mb-4">{t("destinations.noDestinations")}</p>
             <Button onClick={() => setAddOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add your first destination
+              {t("destinations.addFirst")}
             </Button>
           </CardContent>
         </Card>
@@ -217,12 +219,12 @@ export default function DestinationsPage() {
                   <Badge
                     variant={dest.verified ? "default" : "secondary"}
                   >
-                    {dest.verified ? "Verified" : "Pending"}
+                    {dest.verified ? t("common.verified") : t("common.pending")}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
-                    Added {formatDate(dest.created)}
+                    {formatDate(dest.created)}
                   </span>
                   <div className="flex gap-1">
                     <Button
@@ -232,8 +234,8 @@ export default function DestinationsPage() {
                       onClick={() => handleSetDefault(dest.email)}
                       title={
                         defaultDestination === dest.email
-                          ? "Remove default"
-                          : "Set as default"
+                          ? t("destinations.removeDefault")
+                          : t("destinations.setDefault")
                       }
                     >
                       {defaultDestination === dest.email ? (
@@ -259,15 +261,15 @@ export default function DestinationsPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Email Destinations</CardTitle>
+            <CardTitle className="text-lg">{t("destinations.emailDestinations")}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Added</TableHead>
+                  <TableHead>{t("destinations.email")}</TableHead>
+                  <TableHead>{t("destinations.statusCol")}</TableHead>
+                  <TableHead>{t("destinations.added")}</TableHead>
                   <TableHead className="w-[120px]" />
                 </TableRow>
               </TableHeader>
@@ -294,7 +296,7 @@ export default function DestinationsPage() {
                       <Badge
                         variant={dest.verified ? "default" : "secondary"}
                       >
-                        {dest.verified ? "Verified" : "Pending"}
+                        {dest.verified ? t("common.verified") : t("common.pending")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
@@ -309,8 +311,8 @@ export default function DestinationsPage() {
                           onClick={() => handleSetDefault(dest.email)}
                           title={
                             defaultDestination === dest.email
-                              ? "Remove default"
-                              : "Set as default"
+                              ? t("destinations.removeDefault")
+                              : t("destinations.setDefault")
                           }
                         >
                           {defaultDestination === dest.email ? (
@@ -343,10 +345,9 @@ export default function DestinationsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Destination</DialogTitle>
+            <DialogTitle>{t("destinations.deleteTitle")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deleteTarget?.email}&quot;?
-              Rules forwarding to this address will stop working.
+              {t("destinations.deleteDescription", { email: deleteTarget?.email || "" })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -355,14 +356,14 @@ export default function DestinationsPage() {
               onClick={() => setDeleteTarget(null)}
               disabled={deleting}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? "Deleting..." : "Delete"}
+              {deleting ? t("common.deleting") : t("common.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

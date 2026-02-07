@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PinInput } from "@/components/login/pin-input";
 import { ShuffleKeypad } from "@/components/login/shuffle-keypad";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useI18n } from "@/hooks/use-i18n";
 import { Shield } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useI18n();
   const [pin, setPin] = useState("");
   const [pinLength, setPinLength] = useState(6);
   const [error, setError] = useState("");
@@ -42,17 +44,17 @@ export default function LoginPage() {
         if (res.ok) {
           router.push("/");
         } else {
-          setError("Invalid PIN");
+          setError(t("auth.invalidPin"));
           setPin("");
         }
       } catch {
-        setError("Connection error");
+        setError(t("auth.connectionError"));
         setPin("");
       } finally {
         setLoading(false);
       }
     },
-    [router]
+    [router, t]
   );
 
   const handleMobileDigit = useCallback(
@@ -83,9 +85,9 @@ export default function LoginPage() {
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Shield className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl">MailVeil</CardTitle>
+          <CardTitle className="text-2xl">{t("auth.title")}</CardTitle>
           <p className="text-muted-foreground text-sm">
-            Enter your PIN to continue
+            {t("auth.subtitle")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -111,7 +113,7 @@ export default function LoginPage() {
 
           {!isMobile && (
             <p className="text-center text-xs text-muted-foreground">
-              Type your PIN using the keyboard
+              {t("auth.keyboardHint")}
             </p>
           )}
         </CardContent>

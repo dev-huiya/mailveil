@@ -35,9 +35,11 @@ import {
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useI18n } from "@/hooks/use-i18n";
 import type { EmailRoutingRule } from "@/types/cloudflare";
 
 export default function RulesPage() {
+  const { t } = useI18n();
   const [rules, setRules] = useState<EmailRoutingRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -51,11 +53,11 @@ export default function RulesPage() {
       const data = await res.json();
       setRules(data.result || []);
     } catch {
-      toast.error("Failed to load rules");
+      toast.error(t("rules.loadError"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchRules();
@@ -81,9 +83,9 @@ export default function RulesPage() {
           r.id === rule.id ? { ...r, enabled: !r.enabled } : r
         )
       );
-      toast.success(`Rule ${!rule.enabled ? "enabled" : "disabled"}`);
+      toast.success(!rule.enabled ? t("rules.enabled") : t("rules.disabled_toast"));
     } catch {
-      toast.error("Failed to update rule");
+      toast.error(t("rules.updateError"));
     }
   };
 
@@ -99,9 +101,9 @@ export default function RulesPage() {
       if (!res.ok) throw new Error();
 
       setRules((prev) => prev.filter((r) => r.id !== deleteTarget.id));
-      toast.success("Rule deleted");
+      toast.success(t("rules.deleted"));
     } catch {
-      toast.error("Failed to delete rule");
+      toast.error(t("rules.deleteError"));
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
@@ -110,8 +112,8 @@ export default function RulesPage() {
 
   const handleCopy = async (text: string) => {
     const ok = await copyToClipboard(text);
-    if (ok) toast.success("Copied to clipboard");
-    else toast.error("Failed to copy");
+    if (ok) toast.success(t("common.copied"));
+    else toast.error(t("common.copyFailed"));
   };
 
   const handleExport = () => {
@@ -124,7 +126,7 @@ export default function RulesPage() {
     a.download = `mailveil-rules-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Rules exported");
+    toast.success(t("rules.exported"));
   };
 
   const filteredRules = rules.filter(
@@ -136,7 +138,7 @@ export default function RulesPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Rules</h1>
+        <h1 className="text-2xl font-bold">{t("rules.title")}</h1>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-16" />
@@ -149,18 +151,18 @@ export default function RulesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Rules</h1>
+        <h1 className="text-2xl font-bold">{t("rules.title")}</h1>
         <div className="flex gap-2">
           {rules.length > 0 && (
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {t("common.export")}
             </Button>
           )}
           <Button asChild size="sm">
             <Link href="/rules/new">
               <Plus className="mr-2 h-4 w-4" />
-              New Rule
+              {t("rules.newRule")}
             </Link>
           </Button>
         </div>
@@ -170,7 +172,7 @@ export default function RulesPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search rules..."
+            placeholder={t("rules.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -181,11 +183,11 @@ export default function RulesPage() {
       {filteredRules.length === 0 && rules.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">No rules yet</p>
+            <p className="text-muted-foreground mb-4">{t("rules.noRules")}</p>
             <Button asChild>
               <Link href="/rules/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Create your first rule
+                {t("rules.createFirst")}
               </Link>
             </Button>
           </CardContent>
@@ -222,12 +224,12 @@ export default function RulesPage() {
                   <span className="truncate">
                     {rule.actions[0]?.type === "forward"
                       ? rule.actions[0]?.value?.[0]
-                      : "Drop"}
+                      : t("rules.drop")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <Badge variant={rule.enabled ? "default" : "secondary"}>
-                    {rule.enabled ? "Active" : "Inactive"}
+                    {rule.enabled ? t("common.active") : t("common.inactive")}
                   </Badge>
                   <Button
                     variant="ghost"
@@ -247,10 +249,10 @@ export default function RulesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>From</TableHead>
-                <TableHead>To</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead>{t("rules.name")}</TableHead>
+                <TableHead>{t("rules.from")}</TableHead>
+                <TableHead>{t("rules.to")}</TableHead>
+                <TableHead className="w-[100px]">{t("rules.status")}</TableHead>
                 <TableHead className="w-[80px]" />
               </TableRow>
             </TableHeader>
@@ -276,7 +278,7 @@ export default function RulesPage() {
                   <TableCell className="text-xs text-muted-foreground">
                     {rule.actions[0]?.type === "forward"
                       ? rule.actions[0]?.value?.[0]
-                      : "Drop"}
+                      : t("rules.drop")}
                   </TableCell>
                   <TableCell>
                     <Switch
@@ -307,10 +309,9 @@ export default function RulesPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Rule</DialogTitle>
+            <DialogTitle>{t("rules.deleteTitle")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? This
-              action cannot be undone.
+              {t("rules.deleteDescription", { name: deleteTarget?.name || "" })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -319,14 +320,14 @@ export default function RulesPage() {
               onClick={() => setDeleteTarget(null)}
               disabled={deleting}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? "Deleting..." : "Delete"}
+              {deleting ? t("common.deleting") : t("common.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

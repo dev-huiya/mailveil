@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface EmailPreviewProps {
   email: string;
@@ -20,10 +21,12 @@ export function EmailPreview({
   categoryName,
   onRefresh,
 }: EmailPreviewProps) {
+  const { t } = useI18n();
+
   const handleCopy = async () => {
     const ok = await copyToClipboard(email);
-    if (ok) toast.success("Copied to clipboard");
-    else toast.error("Failed to copy");
+    if (ok) toast.success(t("common.copied"));
+    else toast.error(t("common.copyFailed"));
   };
 
   return (

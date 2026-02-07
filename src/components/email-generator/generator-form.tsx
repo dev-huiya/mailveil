@@ -18,12 +18,15 @@ import { CategorySelector } from "./category-selector";
 import { EmailPreview } from "./email-preview";
 import { generateEmail, generateRuleName } from "@/lib/generator";
 import { toast } from "sonner";
+import { useI18n } from "@/hooks/use-i18n";
+import type { TranslationKey } from "@/lib/i18n/translations";
 import type { Destination } from "@/types/cloudflare";
 
 const EMAIL_DOMAIN = process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
 
 export function GeneratorForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const [category, setCategory] = useState("general");
   const [generated, setGenerated] = useState(() =>
     generateEmail("general", EMAIL_DOMAIN)
@@ -44,7 +47,6 @@ export function GeneratorForm() {
         );
         setDestinations(dests);
 
-        // Auto-select default destination from localStorage
         const defaultDest = localStorage.getItem("mailveil-default-destination");
         if (defaultDest && dests.some((d) => d.email === defaultDest)) {
           setSelectedDest(defaultDest);
@@ -52,8 +54,8 @@ export function GeneratorForm() {
           setSelectedDest(dests[0].email);
         }
       })
-      .catch(() => toast.error("Failed to load destinations"));
-  }, []);
+      .catch(() => toast.error(t("newRule.loadError")));
+  }, [t]);
 
   const handleRefresh = useCallback(() => {
     const result = generateEmail(category, EMAIL_DOMAIN);
@@ -75,11 +77,11 @@ export function GeneratorForm() {
 
   const handleCreate = async () => {
     if (!selectedDest) {
-      toast.error("Please select a destination");
+      toast.error(t("newRule.selectDestError"));
       return;
     }
     if (manualMode && !manualEmail) {
-      toast.error("Please enter an email address");
+      toast.error(t("newRule.enterEmailError"));
       return;
     }
 
@@ -102,7 +104,7 @@ export function GeneratorForm() {
         throw new Error(errorData.error || "Failed to create rule");
       }
 
-      toast.success("Rule created successfully");
+      toast.success(t("newRule.created"));
       router.push("/rules");
     } catch (e) {
       toast.error((e as Error).message);
@@ -114,7 +116,7 @@ export function GeneratorForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold mb-3">Category</h2>
+        <h2 className="text-lg font-semibold mb-3">{t("newRule.category")}</h2>
         <CategorySelector selected={category} onSelect={handleCategoryChange} />
       </div>
 
@@ -126,12 +128,12 @@ export function GeneratorForm() {
           checked={manualMode}
           onCheckedChange={setManualMode}
         />
-        <Label htmlFor="manual-mode">Manual input</Label>
+        <Label htmlFor="manual-mode">{t("newRule.manualInput")}</Label>
       </div>
 
       {manualMode ? (
         <div className="space-y-2">
-          <Label>Email address</Label>
+          <Label>{t("newRule.emailAddress")}</Label>
           <div className="flex items-center gap-2">
             <Input
               value={manualEmail}
@@ -145,11 +147,11 @@ export function GeneratorForm() {
         </div>
       ) : (
         <div>
-          <h2 className="text-lg font-semibold mb-3">Generated Email</h2>
+          <h2 className="text-lg font-semibold mb-3">{t("newRule.generatedEmail")}</h2>
           <EmailPreview
             email={generated.email}
             categoryEmoji={generated.category.emoji}
-            categoryName={generated.category.name}
+            categoryName={t(`category.${generated.category.id}` as TranslationKey)}
             onRefresh={handleRefresh}
           />
         </div>
@@ -159,19 +161,19 @@ export function GeneratorForm() {
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>Rule Name</Label>
+          <Label>{t("newRule.ruleName")}</Label>
           <Input
             value={ruleName}
             onChange={(e) => setRuleName(e.target.value)}
-            placeholder="Auto-generated rule name"
+            placeholder={t("newRule.ruleNamePlaceholder")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Forward To</Label>
+          <Label>{t("newRule.forwardTo")}</Label>
           <Select value={selectedDest} onValueChange={setSelectedDest}>
             <SelectTrigger>
-              <SelectValue placeholder="Select destination" />
+              <SelectValue placeholder={t("newRule.selectDestination")} />
             </SelectTrigger>
             <SelectContent>
               {destinations.map((d) => (
@@ -183,7 +185,7 @@ export function GeneratorForm() {
           </Select>
           {destinations.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              No verified destinations. Add one in the Destinations page.
+              {t("newRule.noDestinations")}
             </p>
           )}
         </div>
@@ -195,7 +197,7 @@ export function GeneratorForm() {
         onClick={handleCreate}
         disabled={creating || !selectedDest || (manualMode && !manualEmail)}
       >
-        {creating ? "Creating..." : "Create Rule"}
+        {creating ? t("newRule.creating") : t("newRule.create")}
       </Button>
     </div>
   );
