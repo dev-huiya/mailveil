@@ -24,13 +24,13 @@ export function CategorySelector({ selected, onSelect }: CategorySelectorProps) 
             key={cat.id}
             onClick={() => onSelect(cat.id)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 text-sm font-medium border transition-all",
+              "flex items-center gap-2 shrink-0 rounded-full px-4 py-2.5 text-sm font-medium border transition-all",
               selected === cat.id
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-card border-border text-muted-foreground"
             )}
           >
-            <span>{cat.emoji}</span>
+            <span className="text-base">{cat.emoji}</span>
             <span>{t(`category.${cat.id}` as TranslationKey)}</span>
           </button>
         ))}

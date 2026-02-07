@@ -32,22 +32,24 @@ export function EmailPreview({
 
   if (isMobile) {
     return (
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {categoryEmoji} {categoryName}
-            </span>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRefresh}>
-                <RefreshCw className="h-3.5 w-3.5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy}>
-                <Copy className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="p-5 space-y-4">
+          <div className="text-center">
+            <span className="text-3xl">{categoryEmoji}</span>
           </div>
-          <code className="block text-sm font-semibold break-all">{email}</code>
+          <code className="block text-center text-base font-bold break-all leading-relaxed">
+            {email}
+          </code>
+          <div className="flex gap-2 justify-center">
+            <Button variant="outline" size="sm" onClick={onRefresh} className="gap-1.5">
+              <RefreshCw className="h-3.5 w-3.5" />
+              {t("common.refresh")}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
+              <Copy className="h-3.5 w-3.5" />
+              {t("common.copy")}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );

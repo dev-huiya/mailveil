@@ -21,6 +21,8 @@ const ko: typeof en = {
   "common.copyFailed": "복사 실패",
   "common.export": "내보내기",
   "common.search": "검색",
+  "common.copy": "복사",
+  "common.refresh": "새로고침",
 
   // Auth
   "auth.title": "MailVeil",

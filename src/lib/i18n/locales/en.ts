@@ -19,6 +19,8 @@ const en = {
   "common.copyFailed": "Failed to copy",
   "common.export": "Export",
   "common.search": "Search",
+  "common.copy": "Copy",
+  "common.refresh": "Refresh",
 
   // Auth
   "auth.title": "MailVeil",
