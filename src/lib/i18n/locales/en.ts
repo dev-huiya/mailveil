@@ -1,0 +1,155 @@
+const en = {
+  // Common
+  "common.appName": "MailVeil",
+  "common.loading": "Loading...",
+  "common.cancel": "Cancel",
+  "common.delete": "Delete",
+  "common.deleting": "Deleting...",
+  "common.save": "Save Changes",
+  "common.saving": "Saving...",
+  "common.add": "Add",
+  "common.adding": "Adding...",
+  "common.active": "Active",
+  "common.inactive": "Inactive",
+  "common.enabled": "Enabled",
+  "common.disabled": "Disabled",
+  "common.verified": "Verified",
+  "common.pending": "Pending",
+  "common.copied": "Copied to clipboard",
+  "common.copyFailed": "Failed to copy",
+  "common.export": "Export",
+  "common.search": "Search",
+
+  // Auth
+  "auth.title": "MailVeil",
+  "auth.subtitle": "Enter your PIN to continue",
+  "auth.invalidPin": "Invalid PIN",
+  "auth.connectionError": "Connection error",
+  "auth.keyboardHint": "Type your PIN using the keyboard",
+  "auth.logout": "Logout",
+
+  // Nav
+  "nav.dashboard": "Dashboard",
+  "nav.rules": "Rules",
+  "nav.newRule": "New Rule",
+  "nav.destinations": "Destinations",
+  "nav.settings": "Settings",
+
+  // Theme
+  "theme.toggle": "Toggle theme",
+  "theme.light": "Light",
+  "theme.dark": "Dark",
+  "theme.system": "System",
+
+  // Dashboard
+  "dashboard.title": "Dashboard",
+  "dashboard.totalRules": "Total Rules",
+  "dashboard.active": "Active",
+  "dashboard.inactive": "Inactive",
+  "dashboard.catchAll": "Catch-All",
+  "dashboard.recentRules": "Recent Rules",
+  "dashboard.noRules": "No rules yet.",
+  "dashboard.createFirst": "Create your first rule",
+  "dashboard.viewAll": "View all {count} rules",
+  "dashboard.loadError": "Failed to load dashboard data",
+
+  // Rules
+  "rules.title": "Rules",
+  "rules.newRule": "New Rule",
+  "rules.searchPlaceholder": "Search rules...",
+  "rules.noRules": "No rules yet",
+  "rules.createFirst": "Create your first rule",
+  "rules.name": "Name",
+  "rules.from": "From",
+  "rules.to": "To",
+  "rules.status": "Status",
+  "rules.drop": "Drop",
+  "rules.deleteTitle": "Delete Rule",
+  "rules.deleteDescription":
+    'Are you sure you want to delete "{name}"? This action cannot be undone.',
+  "rules.enabled": "Rule enabled",
+  "rules.disabled_toast": "Rule disabled",
+  "rules.deleted": "Rule deleted",
+  "rules.loadError": "Failed to load rules",
+  "rules.updateError": "Failed to update rule",
+  "rules.deleteError": "Failed to delete rule",
+  "rules.exported": "Rules exported",
+
+  // New Rule
+  "newRule.title": "Create New Rule",
+  "newRule.category": "Category",
+  "newRule.manualInput": "Manual input",
+  "newRule.generatedEmail": "Generated Email",
+  "newRule.emailAddress": "Email address",
+  "newRule.ruleName": "Rule Name",
+  "newRule.ruleNamePlaceholder": "Auto-generated rule name",
+  "newRule.forwardTo": "Forward To",
+  "newRule.selectDestination": "Select destination",
+  "newRule.noDestinations":
+    "No verified destinations. Add one in the Destinations page.",
+  "newRule.create": "Create Rule",
+  "newRule.creating": "Creating...",
+  "newRule.created": "Rule created successfully",
+  "newRule.selectDestError": "Please select a destination",
+  "newRule.enterEmailError": "Please enter an email address",
+  "newRule.loadError": "Failed to load destinations",
+
+  // Categories
+  "category.shopping": "Shopping",
+  "category.social": "Social",
+  "category.finance": "Finance",
+  "category.gaming": "Gaming",
+  "category.dev": "Dev",
+  "category.newsletter": "Newsletter",
+  "category.general": "General",
+
+  // Destinations
+  "destinations.title": "Destinations",
+  "destinations.addTitle": "Add Destination",
+  "destinations.addDescription":
+    "A verification email will be sent to confirm the address.",
+  "destinations.emailPlaceholder": "email@example.com",
+  "destinations.noDestinations": "No destinations yet",
+  "destinations.addFirst": "Add your first destination",
+  "destinations.email": "Email",
+  "destinations.statusCol": "Status",
+  "destinations.added": "Added",
+  "destinations.emailDestinations": "Email Destinations",
+  "destinations.setDefault": "Set as default",
+  "destinations.removeDefault": "Remove default",
+  "destinations.defaultSet": "Set {email} as default destination",
+  "destinations.defaultCleared": "Default destination cleared",
+  "destinations.deleteTitle": "Delete Destination",
+  "destinations.deleteDescription":
+    'Are you sure you want to delete "{email}"? Rules forwarding to this address will stop working.',
+  "destinations.verificationSent":
+    "Verification email sent. Check your inbox.",
+  "destinations.deleted": "Destination deleted",
+  "destinations.loadError": "Failed to load destinations",
+  "destinations.addError": "Failed to add destination",
+  "destinations.deleteError": "Failed to delete destination",
+
+  // Settings
+  "settings.title": "Settings",
+  "settings.emailRouting": "Email Routing",
+  "settings.emailRoutingDesc":
+    "Enable or disable email routing for your domain.",
+  "settings.status": "Status: {status}",
+  "settings.catchAll": "Catch-All Rule",
+  "settings.catchAllDesc":
+    "Handle emails that don't match any specific rule.",
+  "settings.enableCatchAll": "Enable Catch-All",
+  "settings.action": "Action",
+  "settings.forward": "Forward",
+  "settings.drop": "Drop",
+  "settings.forwardTo": "Forward To",
+  "settings.selectDestination": "Select destination",
+  "settings.routingEnabled": "Email routing enabled",
+  "settings.routingDisabled": "Email routing disabled",
+  "settings.catchAllUpdated": "Catch-all rule updated",
+  "settings.loadError": "Failed to load settings",
+  "settings.updateRoutingError": "Failed to update email routing",
+  "settings.updateCatchAllError": "Failed to update catch-all rule",
+};
+
+export default en;
