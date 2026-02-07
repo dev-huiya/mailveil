@@ -191,7 +191,8 @@ export interface GenerateResult {
 export function generateEmailSuggestions(
   categoryId: string,
   domain: string,
-  excludeSeeds?: Set<string>
+  excludeSeeds?: Set<string>,
+  existingEmails?: Set<string>
 ): GenerateResult {
   const category =
     categories.find((c) => c.id === categoryId) || categories[categories.length - 1];
@@ -199,6 +200,7 @@ export function generateEmailSuggestions(
   const usedSeeds = new Set<string>();
   const usedSuffixes = new Set<string>();
   const suggestions: EmailSuggestion[] = [];
+  const existing = existingEmails ?? new Set<string>();
 
   const exclude = excludeSeeds ?? new Set<string>();
 
@@ -211,8 +213,20 @@ export function generateEmailSuggestions(
         w.toLowerCase() !== seed.toLowerCase() &&
         !usedSuffixes.has(w.toLowerCase())
     );
-    const suffix = pickRandom(suffixCandidates);
-    if (suffix) {
+    // 기존 주소와 중복되지 않는 suffix 찾기
+    const shuffled = [...suffixCandidates].sort(() => Math.random() - 0.5);
+    let found = false;
+    for (const suffix of shuffled) {
+      const email = `${seed}.${suffix}@${domain}`;
+      if (existing.has(email)) continue;
+      usedSuffixes.add(suffix.toLowerCase());
+      suggestions.push({ email, seed, suffix });
+      found = true;
+      break;
+    }
+    if (!found && shuffled.length > 0) {
+      // 모든 조합이 이미 존재하면 첫 번째라도 사용
+      const suffix = shuffled[0];
       usedSuffixes.add(suffix.toLowerCase());
       suggestions.push({
         email: `${seed}.${suffix}@${domain}`,
@@ -227,14 +241,32 @@ export function generateEmailSuggestions(
   for (const seed of autoSeeds) {
     usedSeeds.add(seed.toLowerCase());
     const analysis = analyzeSeed(seed);
-    const suffix = generateAutoSuffix(seed, analysis, usedSuffixes);
-    if (suffix) {
+    // 기존 주소와 중복되지 않도록 재시도
+    let added = false;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const suffix = generateAutoSuffix(seed, analysis, usedSuffixes);
+      if (!suffix) break;
+      const email = `${seed}.${suffix}@${domain}`;
+      if (existing.has(email)) {
+        usedSuffixes.add(suffix);
+        continue;
+      }
       usedSuffixes.add(suffix);
-      suggestions.push({
-        email: `${seed}.${suffix}@${domain}`,
-        seed,
-        suffix,
-      });
+      suggestions.push({ email, seed, suffix });
+      added = true;
+      break;
+    }
+    if (!added) {
+      // fallback: 중복이라도 생성
+      const suffix = generateAutoSuffix(seed, analysis, usedSuffixes);
+      if (suffix) {
+        usedSuffixes.add(suffix);
+        suggestions.push({
+          email: `${seed}.${suffix}@${domain}`,
+          seed,
+          suffix,
+        });
+      }
     }
   }
 

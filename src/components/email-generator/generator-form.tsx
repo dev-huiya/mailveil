@@ -23,6 +23,7 @@ import {
 } from "@/lib/generator";
 import { toast } from "sonner";
 import { useI18n } from "@/hooks/use-i18n";
+import { useRules, invalidateRulesCache } from "@/hooks/use-rules";
 import type { TranslationKey } from "@/lib/i18n/translations";
 import type { Destination } from "@/types/cloudflare";
 import { RefreshCw } from "lucide-react";
@@ -32,9 +33,9 @@ const EMAIL_DOMAIN = process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
 export function GeneratorForm() {
   const router = useRouter();
   const { t } = useI18n();
+  const { existingEmails } = useRules();
   const [category, setCategory] = useState("general");
   const [generated, setGenerated] = useState<{
-    seed: string;
     suggestions: EmailSuggestion[];
     category: { id: string; name: string; emoji: string; words: string[] };
   } | null>(null);
@@ -66,14 +67,14 @@ export function GeneratorForm() {
   }, [t]);
 
   const handleRefresh = useCallback((excludeSeeds?: Set<string>) => {
-    const result = generateEmailSuggestions(category, EMAIL_DOMAIN, excludeSeeds);
+    const result = generateEmailSuggestions(category, EMAIL_DOMAIN, excludeSeeds, existingEmails);
     setGenerated(result);
     setSelectedEmail(result.suggestions[0]?.email ?? null);
     if (result.suggestions[0]) {
       const s = result.suggestions[0];
       setRuleName(generateRuleName(result.category.name, s.seed, s.suffix));
     }
-  }, [category]);
+  }, [category, existingEmails]);
 
   useEffect(() => {
     handleRefresh();
@@ -110,6 +111,10 @@ export function GeneratorForm() {
       toast.error(t("newRule.pickAddressError"));
       return;
     }
+    if (existingEmails.has(emailAddress)) {
+      toast.error(t("newRule.duplicateError"));
+      return;
+    }
 
     setCreating(true);
 
@@ -130,6 +135,7 @@ export function GeneratorForm() {
         throw new Error(errorData.error || "Failed to create rule");
       }
 
+      invalidateRulesCache();
       toast.success(t("newRule.created"));
       router.push("/rules");
     } catch (e) {

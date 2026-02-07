@@ -100,6 +100,7 @@ const ko: typeof en = {
   "newRule.created": "이메일 주소가 생성되었습니다!",
   "newRule.selectDestError": "전달 받을 메일을 선택하세요",
   "newRule.enterEmailError": "이메일 주소를 입력하세요",
+  "newRule.duplicateError": "이미 등록된 주소입니다",
   "newRule.loadError": "받은편지함을 불러오지 못했습니다",
 
   // Categories

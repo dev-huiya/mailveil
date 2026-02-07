@@ -10,50 +10,29 @@ import { Mail, MailCheck, MailX, ShieldCheck, Plus, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
-import type { EmailRoutingRule, CatchAllRule } from "@/types/cloudflare";
-
-interface DashboardData {
-  rules: EmailRoutingRule[];
-  catchAll: CatchAllRule | null;
-}
+import { useRules } from "@/hooks/use-rules";
+import type { CatchAllRule } from "@/types/cloudflare";
 
 export default function DashboardPage() {
   const { t } = useI18n();
-  const [data, setData] = useState<DashboardData>({
-    rules: [],
-    catchAll: null,
-  });
-  const [loading, setLoading] = useState(true);
+  const { rules, loading: rulesLoading } = useRules();
+  const [catchAll, setCatchAll] = useState<CatchAllRule | null>(null);
+  const [catchAllLoading, setCatchAllLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [rulesRes, catchAllRes] = await Promise.all([
-          fetch("/api/cloudflare/rules"),
-          fetch("/api/cloudflare/catch-all"),
-        ]);
-
-        const rulesData = await rulesRes.json();
-        const catchAllData = await catchAllRes.json();
-
-        setData({
-          rules: rulesData.result || [],
-          catchAll: catchAllData.result || null,
-        });
-      } catch {
-        toast.error(t("dashboard.loadError"));
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
+    fetch("/api/cloudflare/catch-all")
+      .then((res) => res.json())
+      .then((data) => setCatchAll(data.result || null))
+      .catch(() => toast.error(t("dashboard.loadError")))
+      .finally(() => setCatchAllLoading(false));
   }, [t]);
 
-  const totalRules = data.rules.length;
-  const activeRules = data.rules.filter((r) => r.enabled).length;
+  const loading = rulesLoading || catchAllLoading;
+
+  const totalRules = rules.length;
+  const activeRules = rules.filter((r) => r.enabled).length;
   const inactiveRules = totalRules - activeRules;
-  const catchAllEnabled = data.catchAll?.enabled ?? false;
+  const catchAllEnabled = catchAll?.enabled ?? false;
 
   const handleCopy = async (text: string) => {
     const ok = await copyToClipboard(text);
@@ -136,7 +115,7 @@ export default function DashboardPage() {
           <CardTitle className="text-lg">{t("dashboard.recentRules")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {data.rules.length === 0 ? (
+          {rules.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {t("dashboard.noRules")}{" "}
               <Link href="/rules/new" className="text-primary hover:underline">
@@ -145,7 +124,7 @@ export default function DashboardPage() {
             </p>
           ) : (
             <div className="space-y-3">
-              {data.rules.slice(0, 5).map((rule) => (
+              {rules.slice(0, 5).map((rule) => (
                 <div
                   key={rule.id}
                   className="flex items-center justify-between rounded-lg border p-3"
@@ -171,7 +150,7 @@ export default function DashboardPage() {
                   </Badge>
                 </div>
               ))}
-              {data.rules.length > 5 && (
+              {rules.length > 5 && (
                 <Button variant="link" asChild className="px-0">
                   <Link href="/rules">
                     {t("dashboard.viewAll", { count: totalRules })}

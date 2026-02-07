@@ -98,6 +98,7 @@ const en = {
   "newRule.created": "Address created!",
   "newRule.selectDestError": "Please select a forwarding inbox",
   "newRule.enterEmailError": "Please enter an email address",
+  "newRule.duplicateError": "This address already exists",
   "newRule.loadError": "Failed to load inboxes",
 
   // Categories

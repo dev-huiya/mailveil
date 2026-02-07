@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,34 +38,18 @@ import {
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
+import { useRules } from "@/hooks/use-rules";
 import type { EmailRoutingRule } from "@/types/cloudflare";
 
 export default function RulesPage() {
   const { t } = useI18n();
-  const [rules, setRules] = useState<EmailRoutingRule[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { rules, setRules, loading } = useRules();
   const [search, setSearch] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<EmailRoutingRule | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [editingRule, setEditingRule] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
-
-  const fetchRules = useCallback(async () => {
-    try {
-      const res = await fetch("/api/cloudflare/rules");
-      const data = await res.json();
-      setRules(data.result || []);
-    } catch {
-      toast.error(t("rules.loadError"));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchRules();
-  }, [fetchRules]);
 
   useEffect(() => {
     if (editingRule && editInputRef.current) {
