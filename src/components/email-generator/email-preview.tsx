@@ -6,7 +6,6 @@ import { Copy, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EmailPreviewProps {
   email: string;
@@ -22,7 +21,6 @@ export function EmailPreview({
   onRefresh,
 }: EmailPreviewProps) {
   const { t } = useI18n();
-  const isMobile = useIsMobile();
 
   const handleCopy = async () => {
     const ok = await copyToClipboard(email);
@@ -30,9 +28,10 @@ export function EmailPreview({
     else toast.error(t("common.copyFailed"));
   };
 
-  if (isMobile) {
-    return (
-      <Card className="border-primary/30 bg-primary/5">
+  return (
+    <>
+      {/* Mobile */}
+      <Card className="md:hidden border-primary/30 bg-primary/5">
         <CardContent className="p-5 space-y-4">
           <div className="text-center">
             <span className="text-3xl">{categoryEmoji}</span>
@@ -52,26 +51,25 @@ export function EmailPreview({
           </div>
         </CardContent>
       </Card>
-    );
-  }
 
-  return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-4">
-        <div className="text-2xl shrink-0">{categoryEmoji}</div>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs text-muted-foreground mb-1">{categoryName}</p>
-          <code className="text-sm font-semibold break-all">{email}</code>
-        </div>
-        <div className="flex gap-1 shrink-0">
-          <Button variant="ghost" size="icon" onClick={onRefresh}>
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={handleCopy}>
-            <Copy className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Desktop */}
+      <Card className="hidden md:block">
+        <CardContent className="flex items-center gap-4 p-4">
+          <div className="text-2xl shrink-0">{categoryEmoji}</div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground mb-1">{categoryName}</p>
+            <code className="text-sm font-semibold break-all">{email}</code>
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <Button variant="ghost" size="icon" onClick={onRefresh}>
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleCopy}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

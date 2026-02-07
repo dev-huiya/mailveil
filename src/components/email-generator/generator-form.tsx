@@ -19,7 +19,6 @@ import { EmailPreview } from "./email-preview";
 import { generateEmail, generateRuleName } from "@/lib/generator";
 import { toast } from "sonner";
 import { useI18n } from "@/hooks/use-i18n";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { TranslationKey } from "@/lib/i18n/translations";
 import type { Destination } from "@/types/cloudflare";
 
@@ -28,11 +27,13 @@ const EMAIL_DOMAIN = process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
 export function GeneratorForm() {
   const router = useRouter();
   const { t } = useI18n();
-  const isMobile = useIsMobile();
   const [category, setCategory] = useState("general");
-  const [generated, setGenerated] = useState(() =>
-    generateEmail("general", EMAIL_DOMAIN)
-  );
+  const [generated, setGenerated] = useState<{
+    email: string;
+    word1: string;
+    word2: string;
+    category: { id: string; name: string; emoji: string; words: string[] };
+  } | null>(null);
   const [manualMode, setManualMode] = useState(false);
   const [manualEmail, setManualEmail] = useState("");
   const [ruleName, setRuleName] = useState("");
@@ -75,7 +76,7 @@ export function GeneratorForm() {
 
   const emailAddress = manualMode
     ? `${manualEmail}@${EMAIL_DOMAIN}`
-    : generated.email;
+    : generated?.email ?? "";
 
   const handleCreate = async () => {
     if (!selectedDest) {
@@ -115,16 +116,88 @@ export function GeneratorForm() {
     }
   };
 
-  if (isMobile) {
-    return (
-      <div className="space-y-5">
-        {/* Category tiles */}
+  // Shared form fields used in both layouts
+  const manualToggle = (
+    <div className="flex items-center gap-3">
+      <Switch
+        id="manual-mode"
+        checked={manualMode}
+        onCheckedChange={setManualMode}
+      />
+      <Label htmlFor="manual-mode">{t("newRule.manualInput")}</Label>
+    </div>
+  );
+
+  const manualInput = manualMode && (
+    <div className="space-y-2">
+      <Label>{t("newRule.emailAddress")}</Label>
+      <div className="flex items-center gap-2">
+        <Input
+          value={manualEmail}
+          onChange={(e) => setManualEmail(e.target.value)}
+          placeholder="custom.address"
+        />
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          @{EMAIL_DOMAIN}
+        </span>
+      </div>
+    </div>
+  );
+
+  const ruleNameInput = (
+    <div className="space-y-2">
+      <Label>{t("newRule.ruleName")}</Label>
+      <Input
+        value={ruleName}
+        onChange={(e) => setRuleName(e.target.value)}
+        placeholder={t("newRule.ruleNamePlaceholder")}
+      />
+    </div>
+  );
+
+  const destinationSelect = (
+    <div className="space-y-2">
+      <Label>{t("newRule.forwardTo")}</Label>
+      <Select value={selectedDest} onValueChange={setSelectedDest}>
+        <SelectTrigger>
+          <SelectValue placeholder={t("newRule.selectDestination")} />
+        </SelectTrigger>
+        <SelectContent>
+          {destinations.map((d) => (
+            <SelectItem key={d.id} value={d.email}>
+              {d.email}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {destinations.length === 0 && (
+        <p className="text-xs text-muted-foreground">
+          {t("newRule.noDestinations")}
+        </p>
+      )}
+    </div>
+  );
+
+  const createButton = (
+    <Button
+      className="w-full"
+      size="lg"
+      onClick={handleCreate}
+      disabled={creating || !selectedDest || (manualMode && !manualEmail)}
+    >
+      {creating ? t("newRule.creating") : t("newRule.create")}
+    </Button>
+  );
+
+  return (
+    <>
+      {/* Mobile layout */}
+      <div className="md:hidden space-y-5">
         {!manualMode && (
           <CategorySelector selected={category} onSelect={handleCategoryChange} />
         )}
 
-        {/* Email preview hero */}
-        {!manualMode && (
+        {!manualMode && generated && (
           <EmailPreview
             email={generated.email}
             categoryEmoji={generated.category.emoji}
@@ -133,165 +206,50 @@ export function GeneratorForm() {
           />
         )}
 
-        {/* Manual mode toggle */}
-        <div className="flex items-center gap-3">
-          <Switch
-            id="manual-mode"
-            checked={manualMode}
-            onCheckedChange={setManualMode}
-          />
-          <Label htmlFor="manual-mode">{t("newRule.manualInput")}</Label>
-        </div>
-
-        {manualMode && (
-          <div className="space-y-2">
-            <Label>{t("newRule.emailAddress")}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                value={manualEmail}
-                onChange={(e) => setManualEmail(e.target.value)}
-                placeholder="custom.address"
-              />
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                @{EMAIL_DOMAIN}
-              </span>
-            </div>
-          </div>
-        )}
+        {manualToggle}
+        {manualInput}
 
         <Separator />
 
-        {/* Rule name */}
-        <div className="space-y-2">
-          <Label>{t("newRule.ruleName")}</Label>
-          <Input
-            value={ruleName}
-            onChange={(e) => setRuleName(e.target.value)}
-            placeholder={t("newRule.ruleNamePlaceholder")}
-          />
-        </div>
-
-        {/* Forward to */}
-        <div className="space-y-2">
-          <Label>{t("newRule.forwardTo")}</Label>
-          <Select value={selectedDest} onValueChange={setSelectedDest}>
-            <SelectTrigger>
-              <SelectValue placeholder={t("newRule.selectDestination")} />
-            </SelectTrigger>
-            <SelectContent>
-              {destinations.map((d) => (
-                <SelectItem key={d.id} value={d.email}>
-                  {d.email}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {destinations.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              {t("newRule.noDestinations")}
-            </p>
-          )}
-        </div>
-
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={handleCreate}
-          disabled={creating || !selectedDest || (manualMode && !manualEmail)}
-        >
-          {creating ? t("newRule.creating") : t("newRule.create")}
-        </Button>
-      </div>
-    );
-  }
-
-  // Desktop layout
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold mb-3">{t("newRule.category")}</h2>
-        <CategorySelector selected={category} onSelect={handleCategoryChange} />
+        {ruleNameInput}
+        {destinationSelect}
+        {createButton}
       </div>
 
-      <Separator />
-
-      <div className="flex items-center gap-3">
-        <Switch
-          id="manual-mode"
-          checked={manualMode}
-          onCheckedChange={setManualMode}
-        />
-        <Label htmlFor="manual-mode">{t("newRule.manualInput")}</Label>
-      </div>
-
-      {manualMode ? (
-        <div className="space-y-2">
-          <Label>{t("newRule.emailAddress")}</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              value={manualEmail}
-              onChange={(e) => setManualEmail(e.target.value)}
-              placeholder="custom.address"
-            />
-            <span className="text-sm text-muted-foreground whitespace-nowrap">
-              @{EMAIL_DOMAIN}
-            </span>
-          </div>
-        </div>
-      ) : (
+      {/* Desktop layout */}
+      <div className="hidden md:block space-y-6">
         <div>
-          <h2 className="text-lg font-semibold mb-3">{t("newRule.generatedEmail")}</h2>
-          <EmailPreview
-            email={generated.email}
-            categoryEmoji={generated.category.emoji}
-            categoryName={t(`category.${generated.category.id}` as TranslationKey)}
-            onRefresh={handleRefresh}
-          />
-        </div>
-      )}
-
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label>{t("newRule.ruleName")}</Label>
-          <Input
-            value={ruleName}
-            onChange={(e) => setRuleName(e.target.value)}
-            placeholder={t("newRule.ruleNamePlaceholder")}
-          />
+          <h2 className="text-lg font-semibold mb-3">{t("newRule.category")}</h2>
+          <CategorySelector selected={category} onSelect={handleCategoryChange} />
         </div>
 
-        <div className="space-y-2">
-          <Label>{t("newRule.forwardTo")}</Label>
-          <Select value={selectedDest} onValueChange={setSelectedDest}>
-            <SelectTrigger>
-              <SelectValue placeholder={t("newRule.selectDestination")} />
-            </SelectTrigger>
-            <SelectContent>
-              {destinations.map((d) => (
-                <SelectItem key={d.id} value={d.email}>
-                  {d.email}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {destinations.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              {t("newRule.noDestinations")}
-            </p>
-          )}
+        <Separator />
+
+        {manualToggle}
+
+        {manualMode ? (
+          manualInput
+        ) : generated ? (
+          <div>
+            <h2 className="text-lg font-semibold mb-3">{t("newRule.generatedEmail")}</h2>
+            <EmailPreview
+              email={generated.email}
+              categoryEmoji={generated.category.emoji}
+              categoryName={t(`category.${generated.category.id}` as TranslationKey)}
+              onRefresh={handleRefresh}
+            />
+          </div>
+        ) : null}
+
+        <Separator />
+
+        <div className="space-y-4">
+          {ruleNameInput}
+          {destinationSelect}
         </div>
+
+        {createButton}
       </div>
-
-      <Button
-        className="w-full"
-        size="lg"
-        onClick={handleCreate}
-        disabled={creating || !selectedDest || (manualMode && !manualEmail)}
-      >
-        {creating ? t("newRule.creating") : t("newRule.create")}
-      </Button>
-    </div>
+    </>
   );
 }
