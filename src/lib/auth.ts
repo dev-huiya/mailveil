@@ -1,7 +1,10 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
+import { randomBytes } from "crypto";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || randomBytes(32).toString("hex")
+);
 
 const AUTH_PIN = process.env.AUTH_PIN || "000000";
 
