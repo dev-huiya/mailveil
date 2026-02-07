@@ -41,7 +41,7 @@ cd mailveil
 ### 2. 의존성 설치
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 3. 환경변수 설정
@@ -63,7 +63,7 @@ NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # 이메일 도메인
 ### 4. 개발 서버 실행
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 [http://localhost:3000](http://localhost:3000)에 접속하여 PIN을 입력하면 됩니다.
@@ -71,8 +71,8 @@ npm run dev
 ### 5. 프로덕션 빌드
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 ## Docker 배포

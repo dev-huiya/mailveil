@@ -195,11 +195,11 @@ Button, Card, Input, Badge, Dialog, Table, Select, Switch, Tabs, Separator, Skel
 ```dockerfile
 # Stage 1: 의존성 설치
 FROM node:24-alpine AS deps
-# npm ci --ignore-scripts
+# pnpm install --frozen-lockfile --ignore-scripts
 
 # Stage 2: 애플리케이션 빌드
 FROM node:24-alpine AS builder
-# npm run build (.next/standalone 생성)
+# pnpm build (.next/standalone 생성)
 
 # Stage 3: 프로덕션 실행
 FROM node:24-alpine AS runner

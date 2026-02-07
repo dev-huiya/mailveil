@@ -40,7 +40,7 @@ cd mailveil
 ### 2. Install dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 3. Configure environment variables
@@ -62,7 +62,7 @@ NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # Your email domain
 ### 4. Run development server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and enter your PIN to login.
@@ -70,8 +70,8 @@ Open [http://localhost:3000](http://localhost:3000) and enter your PIN to login.
 ### 5. Production build
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 ## Docker Deployment
