@@ -132,7 +132,7 @@ export default function RulesPage() {
   const filteredRules = rules.filter(
     (rule) =>
       rule.name.toLowerCase().includes(search.toLowerCase()) ||
-      rule.matchers[0]?.value.toLowerCase().includes(search.toLowerCase())
+      rule.matchers[0]?.value?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {

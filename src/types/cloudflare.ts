@@ -35,9 +35,9 @@ export interface EmailRoutingRule {
 }
 
 export interface RuleMatcher {
-  type: "literal";
-  field: "to";
-  value: string;
+  type: "literal" | "all";
+  field?: "to";
+  value?: string;
 }
 
 export interface RuleAction {

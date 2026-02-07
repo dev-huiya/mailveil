@@ -9,6 +9,12 @@ export async function GET() {
 
   try {
     const data = await listRules();
+    // catch-all 규칙은 별도 엔드포인트로 관리하므로 목록에서 제외
+    if (Array.isArray(data.result)) {
+      data.result = data.result.filter(
+        (rule) => rule.matchers?.[0]?.type !== "all"
+      );
+    }
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json(
