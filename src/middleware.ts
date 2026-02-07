@@ -4,8 +4,10 @@ import { jwtVerify } from "jose";
 
 const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/pin-length"];
 
+const encoder = new TextEncoder();
+
 function getJwtSecret() {
-  return new TextEncoder().encode(process.env.JWT_SECRET!);
+  return encoder.encode(process.env.JWT_SECRET!);
 }
 
 export async function middleware(request: NextRequest) {
