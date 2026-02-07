@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,10 +31,12 @@ import {
   Trash2,
   Download,
   ArrowRight,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { copyToClipboard } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useI18n } from "@/hooks/use-i18n";
 import type { EmailRoutingRule } from "@/types/cloudflare";
 
@@ -45,7 +47,9 @@ export default function RulesPage() {
   const [search, setSearch] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<EmailRoutingRule | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const isMobile = useIsMobile();
+  const [editingRule, setEditingRule] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   const fetchRules = useCallback(async () => {
     try {
@@ -62,6 +66,13 @@ export default function RulesPage() {
   useEffect(() => {
     fetchRules();
   }, [fetchRules]);
+
+  useEffect(() => {
+    if (editingRule && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [editingRule]);
 
   const handleToggle = async (rule: EmailRoutingRule) => {
     try {
@@ -129,6 +140,50 @@ export default function RulesPage() {
     toast.success(t("rules.exported"));
   };
 
+  const startEditing = (rule: EmailRoutingRule) => {
+    setEditingRule(rule.id);
+    setEditName(rule.name);
+  };
+
+  const cancelEditing = () => {
+    setEditingRule(null);
+    setEditName("");
+  };
+
+  const handleRename = async (ruleId: string) => {
+    const rule = rules.find((r) => r.id === ruleId);
+    if (!rule || !editName.trim() || editName.trim() === rule.name) {
+      cancelEditing();
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/cloudflare/rules/${ruleId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName.trim(),
+          enabled: rule.enabled,
+          matchers: rule.matchers,
+          actions: rule.actions,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setRules((prev) =>
+        prev.map((r) =>
+          r.id === ruleId ? { ...r, name: editName.trim() } : r
+        )
+      );
+      toast.success(t("rules.nameUpdated"));
+    } catch {
+      toast.error(t("rules.updateError"));
+    } finally {
+      cancelEditing();
+    }
+  };
+
   const filteredRules = rules.filter(
     (rule) =>
       rule.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -192,101 +247,88 @@ export default function RulesPage() {
             </Button>
           </CardContent>
         </Card>
-      ) : isMobile ? (
-        <div className="space-y-3">
-          {filteredRules.map((rule) => (
-            <Card key={rule.id}>
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm truncate flex-1 mr-2">
-                    {rule.name}
-                  </span>
-                  <Switch
-                    checked={rule.enabled}
-                    onCheckedChange={() => handleToggle(rule)}
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <code className="text-xs text-muted-foreground truncate">
-                    {rule.matchers[0]?.value}
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 shrink-0"
-                    onClick={() => handleCopy(rule.matchers[0]?.value || "")}
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <ArrowRight className="h-3 w-3" />
-                  <span className="truncate">
-                    {rule.actions[0]?.type === "forward"
-                      ? rule.actions[0]?.value?.[0]
-                      : t("rules.drop")}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Badge variant={rule.enabled ? "default" : "secondary"}>
-                    {rule.enabled ? t("common.active") : t("common.inactive")}
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => setDeleteTarget(rule)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("rules.name")}</TableHead>
-                <TableHead>{t("rules.from")}</TableHead>
-                <TableHead>{t("rules.to")}</TableHead>
-                <TableHead className="w-[100px]">{t("rules.status")}</TableHead>
-                <TableHead className="w-[80px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRules.map((rule) => (
-                <TableRow key={rule.id}>
-                  <TableCell className="font-medium">{rule.name}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <code className="text-xs">{rule.matchers[0]?.value}</code>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() =>
-                          handleCopy(rule.matchers[0]?.value || "")
-                        }
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {rule.actions[0]?.type === "forward"
-                      ? rule.actions[0]?.value?.[0]
-                      : t("rules.drop")}
-                  </TableCell>
-                  <TableCell>
+        <>
+          {/* Mobile layout */}
+          <div className="md:hidden space-y-3">
+            {filteredRules.map((rule) => (
+              <Card key={rule.id} className="py-0 gap-0">
+                <CardContent className="p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    {editingRule === rule.id ? (
+                      <div className="flex items-center gap-1 flex-1 mr-2">
+                        <Input
+                          ref={editInputRef}
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRename(rule.id);
+                            if (e.key === "Escape") cancelEditing();
+                          }}
+                          className="h-7 text-sm"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 shrink-0"
+                          onClick={() => handleRename(rule.id)}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 shrink-0"
+                          onClick={cancelEditing}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 flex-1 mr-2 min-w-0">
+                        <span className="font-medium text-sm truncate">
+                          {rule.name}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 shrink-0"
+                          onClick={() => startEditing(rule)}
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
                     <Switch
                       checked={rule.enabled}
                       onCheckedChange={() => handleToggle(rule)}
                     />
-                  </TableCell>
-                  <TableCell>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <code className="text-xs text-muted-foreground truncate">
+                      {rule.matchers[0]?.value}
+                    </code>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0"
+                      onClick={() => handleCopy(rule.matchers[0]?.value || "")}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <ArrowRight className="h-3 w-3 shrink-0" />
+                    <span className="truncate">
+                      {rule.actions[0]?.type === "forward"
+                        ? rule.actions[0]?.value?.[0]
+                        : t("rules.drop")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant={rule.enabled ? "default" : "secondary"}>
+                      {rule.enabled ? t("common.active") : t("common.inactive")}
+                    </Badge>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -295,12 +337,117 @@ export default function RulesPage() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </TableCell>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Desktop layout */}
+          <div className="hidden md:block rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("rules.name")}</TableHead>
+                  <TableHead>{t("rules.from")}</TableHead>
+                  <TableHead className="w-[40px]" />
+                  <TableHead>{t("rules.to")}</TableHead>
+                  <TableHead className="w-[100px]">{t("rules.status")}</TableHead>
+                  <TableHead className="w-[80px]" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {filteredRules.map((rule) => (
+                  <TableRow key={rule.id}>
+                    <TableCell className="font-medium">
+                      {editingRule === rule.id ? (
+                        <div className="flex items-center gap-1">
+                          <Input
+                            ref={editInputRef}
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleRename(rule.id);
+                              if (e.key === "Escape") cancelEditing();
+                            }}
+                            className="h-7 text-sm"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 shrink-0"
+                            onClick={() => handleRename(rule.id)}
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 shrink-0"
+                            onClick={cancelEditing}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{rule.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => startEditing(rule)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <code className="text-xs">{rule.matchers[0]?.value}</code>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() =>
+                            handleCopy(rule.matchers[0]?.value || "")
+                          }
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-0">
+                      <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {rule.actions[0]?.type === "forward"
+                        ? rule.actions[0]?.value?.[0]
+                        : t("rules.drop")}
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={rule.enabled}
+                        onCheckedChange={() => handleToggle(rule)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        onClick={() => setDeleteTarget(rule)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
 
       <Dialog
