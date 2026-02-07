@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface PinInputProps {
@@ -18,35 +18,29 @@ export function PinInput({
   onComplete,
   disabled,
 }: PinInputProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    containerRef.current?.focus();
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (disabled) return;
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (disabled) return;
-
-    if (e.key >= "0" && e.key <= "9") {
-      const newValue = value + e.key;
-      if (newValue.length <= length) {
-        onChange(newValue);
-        if (newValue.length === length) {
-          onComplete(newValue);
+      if (e.key >= "0" && e.key <= "9") {
+        const newValue = value + e.key;
+        if (newValue.length <= length) {
+          onChange(newValue);
+          if (newValue.length === length) {
+            onComplete(newValue);
+          }
         }
+      } else if (e.key === "Backspace") {
+        onChange(value.slice(0, -1));
       }
-    } else if (e.key === "Backspace") {
-      onChange(value.slice(0, -1));
-    }
-  };
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [value, length, onChange, onComplete, disabled]);
 
   return (
-    <div
-      ref={containerRef}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      className="flex gap-3 justify-center outline-none"
-    >
+    <div className="flex gap-3 justify-center">
       {Array.from({ length }).map((_, i) => (
         <div
           key={i}
