@@ -21,33 +21,25 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 
 ## 주요 기능
 
-| | 기능 | 설명 |
-|---|---|---|
-| **주소 생성** | 카테고리 기반 이메일 생성 | 8개 테마 카테고리에서 `단어.단어@도메인` 주소를 즉시 생성 |
-| **규칙 관리** | CRUD + 토글 | 라우팅 규칙 생성, 검색, 이름 변경, 활성/비활성, JSON 내보내기, 삭제 |
-| **전달 주소** | 수신 주소 관리 | 포워딩 대상 추가, 인증, 기본 설정, 삭제 |
-| **Catch-All** | 와일드카드 제어 | 미등록 주소 수신 메일 전달 또는 삭제 |
-| **설정** | 라우팅 토글 | 도메인의 Email Routing 켜기/끄기 |
-| **인증** | PIN 로그인 | 데스크톱 키보드 입력 + 모바일 셔플 키패드 (숄더 서핑 방지) |
-| **다국어** | 한국어/영어 | 브라우저 언어 자동 감지 + 수동 전환 |
-| **테마** | 다크 / 라이트 / 시스템 | 세션 간 유지되는 테마 전환 |
-| **PWA** | 설치형 웹 앱 | 홈 화면에 추가하면 네이티브 앱처럼 동작 |
-| **반응형** | 모바일 퍼스트 | 데스크톱 사이드바 + 모바일 Sheet 드로어 |
+- **주소 생성** — 8개 테마 카테고리 → `단어.단어@example.com` 일회용 주소 즉시 생성
+- **규칙 관리** — 생성, 검색, 이름 변경, 활성/비활성 토글, JSON 내보내기, 삭제
+- **전달 주소** — 포워딩 대상 추가, 인증, 기본 설정, 삭제
+- **Catch-all & 라우팅** — 미등록 주소 전달/삭제, Email Routing 켜기/끄기
+- **PIN 인증** — 키보드 입력 (데스크톱) + 셔플 키패드 (모바일)
+- **다크/라이트/시스템 테마** · **한국어/영어** · **PWA** · **반응형**
 
 ### 카테고리
 
-> `단어.단어@도메인` — 선택한 카테고리에서 두 단어를 랜덤 조합합니다.
-
 | | 카테고리 | 예시 |
 |---|---|---|
-| :lock: | 프라이버시 | `cloak.phantom@` |
-| :shopping_cart: | 쇼핑 | `cart.deal@` |
-| :speech_balloon: | 소셜 | `chat.tribe@` |
-| :moneybag: | 금융 | `vault.ledger@` |
-| :video_game: | 게임 | `quest.arena@` |
-| :computer: | 개발 | `git.deploy@` |
-| :newspaper: | 뉴스레터 | `digest.pulse@` |
-| :sparkles: | 일반 | `ember.jade@` |
+| :lock: | 프라이버시 | `cloak.phantom@example.com` |
+| :shopping_cart: | 쇼핑 | `cart.deal@example.com` |
+| :speech_balloon: | 소셜 | `chat.tribe@example.com` |
+| :moneybag: | 금융 | `vault.ledger@example.com` |
+| :video_game: | 게임 | `quest.arena@example.com` |
+| :computer: | 개발 | `git.deploy@example.com` |
+| :newspaper: | 뉴스레터 | `digest.pulse@example.com` |
+| :sparkles: | 일반 | `ember.jade@example.com` |
 
 ---
 
@@ -63,7 +55,7 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 `.env` 파일 생성:
 
 ```env
-AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유)
+AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유, 6자리 권장)
 CF_API_TOKEN=your-cloudflare-api-token   # Cloudflare API 토큰
 CF_ZONE_ID=your-zone-id                 # Cloudflare Zone ID
 CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID

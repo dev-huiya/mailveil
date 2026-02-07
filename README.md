@@ -21,33 +21,25 @@ and control destination addresses — without ever touching the Cloudflare dashb
 
 ## Features
 
-| | Feature | Description |
-|---|---|---|
-| **Alias Generator** | Category-based email creation | Pick from 8 themed categories and get `word.word@domain` aliases instantly |
-| **Rules** | Full CRUD + toggle | Create, search, rename, enable/disable, export (JSON), and delete routing rules |
-| **Forwarding** | Destination management | Add, verify, set default, and remove forwarding inboxes |
-| **Catch-All** | Wildcard control | Forward or drop emails sent to unregistered addresses |
-| **Settings** | Routing toggle | Enable/disable Cloudflare Email Routing for your domain |
-| **Auth** | PIN login | Desktop keyboard input + mobile shuffle keypad for anti-shoulder-surfing |
-| **i18n** | Multi-language | English & Korean with browser-detected auto-selection |
-| **Theme** | Dark / Light / System | Smooth toggle, persisted across sessions |
-| **PWA** | Installable web app | Add to home screen for a native-like experience |
-| **Responsive** | Mobile-first | Desktop sidebar + mobile sheet drawer navigation |
+- **Alias generator** — 8 themed categories → `word.word@example.com` disposable addresses
+- **Rule management** — Create, search, rename, toggle, export (JSON), delete
+- **Forwarding inboxes** — Add, verify, set default, remove destination addresses
+- **Catch-all & routing** — Forward/drop unregistered addresses, enable/disable Email Routing
+- **PIN auth** — Keyboard input (desktop) + shuffle keypad (mobile)
+- **Dark/Light/System theme** · **English/Korean i18n** · **PWA** · **Responsive**
 
 ### Categories
 
-> `word.word@yourdomain.com` — two random words from the selected category.
-
 | | Category | Example |
 |---|---|---|
-| :lock: | Privacy | `cloak.phantom@` |
-| :shopping_cart: | Shopping | `cart.deal@` |
-| :speech_balloon: | Social | `chat.tribe@` |
-| :moneybag: | Finance | `vault.ledger@` |
-| :video_game: | Gaming | `quest.arena@` |
-| :computer: | Dev | `git.deploy@` |
-| :newspaper: | Newsletter | `digest.pulse@` |
-| :sparkles: | General | `ember.jade@` |
+| :lock: | Privacy | `cloak.phantom@example.com` |
+| :shopping_cart: | Shopping | `cart.deal@example.com` |
+| :speech_balloon: | Social | `chat.tribe@example.com` |
+| :moneybag: | Finance | `vault.ledger@example.com` |
+| :video_game: | Gaming | `quest.arena@example.com` |
+| :computer: | Dev | `git.deploy@example.com` |
+| :newspaper: | Newsletter | `digest.pulse@example.com` |
+| :sparkles: | General | `ember.jade@example.com` |
 
 ---
 
