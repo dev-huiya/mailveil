@@ -2,23 +2,22 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
-
 const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/pin-length"];
+
+function getJwtSecret() {
+  return new TextEncoder().encode(process.env.JWT_SECRET!);
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // Allow static files and Next.js internals
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon") ||
-    pathname.includes(".")
+    pathname.startsWith("/favicon")
   ) {
     return NextResponse.next();
   }
@@ -30,7 +29,7 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    await jwtVerify(token, JWT_SECRET);
+    await jwtVerify(token, getJwtSecret());
     return NextResponse.next();
   } catch {
     const response = NextResponse.redirect(new URL("/login", request.url));
