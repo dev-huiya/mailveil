@@ -5,7 +5,31 @@ export interface Category {
   words: string[];
 }
 
+// 금칙어 - 자동 생성 suffix에서 제외
+export const FORBIDDEN_WORDS = new Set([
+  "shit", "fuck", "ass", "hell", "damn", "crap", "dick", "cock",
+  "porn", "sex", "rape", "kill", "die", "dead", "suck", "sucks",
+  "hate", "spam", "scam", "fake", "phish", "virus", "malware",
+]);
+
 export const categories: Category[] = [
+  {
+    id: "privacy",
+    name: "Privacy",
+    emoji: "\uD83D\uDD10",
+    words: [
+      "veil", "shadow", "cloak", "mask", "alias", "silent", "hidden",
+      "obscure", "blur", "shade", "cover", "ghost", "phantom", "secret",
+      "stealth", "guard", "shield", "fortress", "vault", "bunker",
+      "cipher", "encode", "scramble", "anonym", "incognito", "private",
+      "covert", "discreet", "unseen", "undetect", "camouflage",
+      "lockscreen", "blindfold", "curtain", "barrier", "gatekeeper",
+      "sentry", "watchdog", "protector", "defender", "safeguard",
+      "sanctum", "haven", "refuge", "retreat", "hideout", "shelter",
+      "privacy", "confidential", "secluded", "isolated", "detached",
+      "insulated", "sealed", "locked", "secured", "protected",
+    ],
+  },
   {
     id: "shopping",
     name: "Shopping",
@@ -15,6 +39,13 @@ export const categories: Category[] = [
       "gift", "brand", "price", "market", "trade", "stock", "item",
       "goods", "retail", "offer", "promo", "value", "bargain", "haul",
       "wish", "basket", "coupon", "refund", "pack", "trend", "style", "pick",
+      "checkout", "delivery", "shipping", "wishlist", "favorite",
+      "discount", "clearance", "outlet", "vendor", "merchant", "supplier",
+      "purchase", "subscribe", "membership", "loyalty", "reward",
+      "inventory", "catalog", "browse", "compare", "review", "rating",
+      "prime", "express", "bulk", "bundle", "combo", "set", "kit",
+      "brand", "label", "designer", "premium", "luxury", "basic",
+      "return", "exchange", "warranty", "receipt", "invoice",
     ],
   },
   {
@@ -26,6 +57,13 @@ export const categories: Category[] = [
       "follow", "ping", "buzz", "wave", "meet", "club", "loop",
       "vibe", "crowd", "tribe", "circle", "spark", "bond", "sync",
       "voice", "story", "react", "emoji", "trend", "meme", "snap", "tag",
+      "thread", "reply", "mention", "quote", "repost", "retweet",
+      "dm", "inbox", "notification", "alert", "bell", "reminder",
+      "community", "network", "connect", "invite", "join", "leave",
+      "profile", "bio", "avatar", "cover", "highlight", "pin",
+      "comment", "reply", "thread", "conversation", "message",
+      "block", "mute", "report", "archive", "bookmark", "save",
+      "live", "stream", "broadcast", "watch", "view", "subscriber",
     ],
   },
   {
@@ -37,6 +75,13 @@ export const categories: Category[] = [
       "save", "earn", "gain", "asset", "rate", "debt", "credit",
       "stock", "bond", "trade", "yield", "profit", "ledger", "vault",
       "wallet", "check", "swift", "wire", "audit", "budget", "mint", "gold",
+      "invest", "portfolio", "dividend", "interest", "premium", "fee",
+      "transfer", "deposit", "withdraw", "balance", "statement",
+      "payment", "invoice", "receipt", "refund", "fee", "charge",
+      "crypto", "bitcoin", "ethereum", "token", "defi", "nft",
+      "insurance", "claim", "policy", "coverage", "premium",
+      "mortgage", "lease", "installment", "due", "overdue",
+      "recurring", "subscription", "autopay", "direct", "ach",
     ],
   },
   {
@@ -48,6 +93,13 @@ export const categories: Category[] = [
       "arena", "guild", "team", "score", "combo", "skill", "rank",
       "pixel", "sword", "shield", "craft", "spawn", "buff", "mod",
       "steam", "retro", "epic", "tower", "dungeon", "rogue", "mage", "dash",
+      "sprite", "grind", "farm", "respawn", "checkpoint", "save",
+      "multiplayer", "coop", "pvp", "pve", "match", "round",
+      "achievement", "trophy", "badge", "unlock", "quest", "mission",
+      "inventory", "gear", "equip", "upgrade", "enhance", "socket",
+      "summon", "evolve", "transform", "fusion", "merge",
+      "gacha", "roll", "pull", "banner", "event", "season",
+      "strategy", "rpg", "mmo", "fps", "sandbox", "survival",
     ],
   },
   {
@@ -59,6 +111,13 @@ export const categories: Category[] = [
       "test", "log", "push", "pull", "hack", "bit", "byte",
       "stack", "rust", "docker", "cloud", "build", "deploy", "debug",
       "linux", "shell", "script", "merge", "branch", "func", "type", "loop",
+      "commit", "pr", "repo", "clone", "fork", "remote", "origin",
+      "package", "module", "import", "export", "dependency", "vendor",
+      "runtime", "compile", "interpret", "execute", "parse",
+      "schema", "migration", "query", "orm", "database", "sql",
+      "webhook", "callback", "middleware", "handler", "render",
+      "auth", "token", "session", "cookie", "header", "cors",
+      "cache", "cdn", "static", "asset", "bundle", "chunk",
     ],
   },
   {
@@ -70,6 +129,13 @@ export const categories: Category[] = [
       "report", "update", "press", "media", "blog", "article", "post",
       "review", "guide", "tip", "insight", "trend", "recap", "flash",
       "morning", "evening", "headline", "scoop", "draft", "issue", "topic", "note",
+      "subscribe", "unsubscribe", "optin", "optout", "preference",
+      "edition", "volume", "number", "chapter", "section", "column",
+      "curated", "handpick", "feature", "spotlight", "highlight",
+      "roundup", "summary", "overview", "outline",
+      "breaking", "exclusive", "leaked", "rumor", "confirmed",
+      "archive", "backissue", "oldpost", "retrospective", "anniversary",
+      "dispatch", "bulletin", "circular", "notice", "announcement",
     ],
   },
   {
@@ -81,6 +147,13 @@ export const categories: Category[] = [
       "spark", "drift", "echo", "pulse", "bloom", "frost", "shade",
       "mist", "dusk", "dawn", "pine", "reed", "stone", "creek",
       "leaf", "cloud", "ember", "coral", "sage", "iris", "jade", "onyx",
+      "silver", "gold", "bronze", "copper", "iron", "quartz",
+      "river", "ocean", "mountain", "valley", "meadow", "forest",
+      "ember", "flame", "blaze", "frost", "snow", "icicle",
+      "aurora", "comet", "meteor", "cosmos", "nebula", "galaxy",
+      "crystal", "gem", "pearl", "opal", "ruby", "sapphire",
+      "river", "brook", "stream", "cascade", "waterfall", "spring",
+      "oak", "maple", "birch", "willow", "cedar", "ash",
     ],
   },
 ];

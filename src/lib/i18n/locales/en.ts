@@ -82,7 +82,10 @@ const en = {
   "newRule.title": "Create New Address",
   "newRule.category": "Category",
   "newRule.manualInput": "Enter manually",
-  "newRule.generatedEmail": "Suggested Address",
+  "newRule.generatedEmail": "Suggested Addresses",
+  "newRule.refreshAll": "Refresh All",
+  "newRule.pickAddress": "Pick one to use",
+  "newRule.pickAddressError": "Please pick one of the suggested addresses",
   "newRule.emailAddress": "Email address",
   "newRule.ruleName": "Label",
   "newRule.ruleNamePlaceholder": "e.g. Netflix, Amazon...",
@@ -98,6 +101,7 @@ const en = {
   "newRule.loadError": "Failed to load inboxes",
 
   // Categories
+  "category.privacy": "Privacy",
   "category.shopping": "Shopping",
   "category.social": "Social",
   "category.finance": "Finance",

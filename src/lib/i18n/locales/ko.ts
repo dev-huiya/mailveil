@@ -85,6 +85,9 @@ const ko: typeof en = {
   "newRule.category": "카테고리",
   "newRule.manualInput": "직접 입력",
   "newRule.generatedEmail": "추천 주소",
+  "newRule.refreshAll": "다시 추천",
+  "newRule.pickAddress": "하나를 선택하세요",
+  "newRule.pickAddressError": "추천 주소 중 하나를 선택하세요",
   "newRule.emailAddress": "이메일 주소",
   "newRule.ruleName": "라벨",
   "newRule.ruleNamePlaceholder": "예: 넷플릭스, 아마존...",
@@ -100,6 +103,7 @@ const ko: typeof en = {
   "newRule.loadError": "받은편지함을 불러오지 못했습니다",
 
   // Categories
+  "category.privacy": "프라이버시",
   "category.shopping": "쇼핑",
   "category.social": "소셜",
   "category.finance": "금융",

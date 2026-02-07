@@ -16,11 +16,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CategorySelector } from "./category-selector";
 import { EmailPreview } from "./email-preview";
-import { generateEmail, generateRuleName } from "@/lib/generator";
+import {
+  generateEmailSuggestions,
+  generateRuleName,
+  type EmailSuggestion,
+} from "@/lib/generator";
 import { toast } from "sonner";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n/translations";
 import type { Destination } from "@/types/cloudflare";
+import { RefreshCw } from "lucide-react";
 
 const EMAIL_DOMAIN = process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
 
@@ -29,11 +34,11 @@ export function GeneratorForm() {
   const { t } = useI18n();
   const [category, setCategory] = useState("general");
   const [generated, setGenerated] = useState<{
-    email: string;
-    word1: string;
-    word2: string;
+    seed: string;
+    suggestions: EmailSuggestion[];
     category: { id: string; name: string; emoji: string; words: string[] };
   } | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [manualMode, setManualMode] = useState(false);
   const [manualEmail, setManualEmail] = useState("");
   const [ruleName, setRuleName] = useState("");
@@ -60,10 +65,14 @@ export function GeneratorForm() {
       .catch(() => toast.error(t("newRule.loadError")));
   }, [t]);
 
-  const handleRefresh = useCallback(() => {
-    const result = generateEmail(category, EMAIL_DOMAIN);
+  const handleRefresh = useCallback((excludeSeeds?: Set<string>) => {
+    const result = generateEmailSuggestions(category, EMAIL_DOMAIN, excludeSeeds);
     setGenerated(result);
-    setRuleName(generateRuleName(result.category.name, result.word1, result.word2));
+    setSelectedEmail(result.suggestions[0]?.email ?? null);
+    if (result.suggestions[0]) {
+      const s = result.suggestions[0];
+      setRuleName(generateRuleName(result.category.name, s.seed, s.suffix));
+    }
   }, [category]);
 
   useEffect(() => {
@@ -74,9 +83,19 @@ export function GeneratorForm() {
     setCategory(id);
   };
 
+  const handleSelectEmail = (email: string) => {
+    setSelectedEmail(email);
+    if (generated) {
+      const suggestion = generated.suggestions.find((s) => s.email === email);
+      if (suggestion) {
+        setRuleName(generateRuleName(generated.category.name, suggestion.seed, suggestion.suffix));
+      }
+    }
+  };
+
   const emailAddress = manualMode
     ? `${manualEmail}@${EMAIL_DOMAIN}`
-    : generated?.email ?? "";
+    : selectedEmail ?? "";
 
   const handleCreate = async () => {
     if (!selectedDest) {
@@ -85,6 +104,10 @@ export function GeneratorForm() {
     }
     if (manualMode && !manualEmail) {
       toast.error(t("newRule.enterEmailError"));
+      return;
+    }
+    if (!manualMode && !selectedEmail) {
+      toast.error(t("newRule.pickAddressError"));
       return;
     }
 
@@ -183,10 +206,42 @@ export function GeneratorForm() {
       className="w-full"
       size="lg"
       onClick={handleCreate}
-      disabled={creating || !selectedDest || (manualMode && !manualEmail)}
+      disabled={
+        creating ||
+        !selectedDest ||
+        (manualMode ? !manualEmail : !selectedEmail)
+      }
     >
       {creating ? t("newRule.creating") : t("newRule.create")}
     </Button>
+  );
+
+  const suggestionsSection = !manualMode && generated && (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{t("newRule.generatedEmail")}</h2>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            handleRefresh(
+              new Set(generated.suggestions.map((s) => s.seed.toLowerCase()))
+            )
+          }
+          className="gap-1.5 shrink-0"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          {t("newRule.refreshAll")}
+        </Button>
+      </div>
+      <EmailPreview
+        suggestions={generated.suggestions}
+        selectedEmail={selectedEmail}
+        onSelect={handleSelectEmail}
+        categoryEmoji={generated.category.emoji}
+        categoryName={t(`category.${generated.category.id}` as TranslationKey)}
+      />
+    </div>
   );
 
   return (
@@ -197,14 +252,7 @@ export function GeneratorForm() {
           <CategorySelector selected={category} onSelect={handleCategoryChange} />
         )}
 
-        {!manualMode && generated && (
-          <EmailPreview
-            email={generated.email}
-            categoryEmoji={generated.category.emoji}
-            categoryName={t(`category.${generated.category.id}` as TranslationKey)}
-            onRefresh={handleRefresh}
-          />
-        )}
+        {suggestionsSection}
 
         {manualToggle}
         {manualInput}
@@ -229,17 +277,9 @@ export function GeneratorForm() {
 
         {manualMode ? (
           manualInput
-        ) : generated ? (
-          <div>
-            <h2 className="text-lg font-semibold mb-3">{t("newRule.generatedEmail")}</h2>
-            <EmailPreview
-              email={generated.email}
-              categoryEmoji={generated.category.emoji}
-              categoryName={t(`category.${generated.category.id}` as TranslationKey)}
-              onRefresh={handleRefresh}
-            />
-          </div>
-        ) : null}
+        ) : (
+          suggestionsSection
+        )}
 
         <Separator />
 
