@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, LogOut, Menu, Globe } from "lucide-react";
+import { Moon, Sun, LogOut, Menu, Globe, Check } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
 import { useState } from "react";
 import { useI18n } from "@/hooks/use-i18n";
@@ -17,7 +17,7 @@ import { locales, localeNames, type Locale } from "@/lib/i18n/translations";
 
 export function Header() {
   const router = useRouter();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { t, locale, setLocale } = useI18n();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -51,9 +51,10 @@ export function Header() {
             <DropdownMenuItem
               key={loc}
               onClick={() => setLocale(loc as Locale)}
-              className={locale === loc ? "font-semibold" : ""}
+              className="justify-between"
             >
               {localeNames[loc]}
+              <Check className={`h-4 w-4 text-primary ${locale === loc ? "opacity-100" : "opacity-0"}`} />
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -68,14 +69,17 @@ export function Header() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setTheme("light")}>
+          <DropdownMenuItem onClick={() => setTheme("light")} className="justify-between">
             {t("theme.light")}
+            <Check className={`h-4 w-4 text-primary ${theme === "light" ? "opacity-100" : "opacity-0"}`} />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("dark")}>
+          <DropdownMenuItem onClick={() => setTheme("dark")} className="justify-between">
             {t("theme.dark")}
+            <Check className={`h-4 w-4 text-primary ${theme === "dark" ? "opacity-100" : "opacity-0"}`} />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("system")}>
+          <DropdownMenuItem onClick={() => setTheme("system")} className="justify-between">
             {t("theme.system")}
+            <Check className={`h-4 w-4 text-primary ${theme === "system" ? "opacity-100" : "opacity-0"}`} />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
