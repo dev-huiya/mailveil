@@ -183,10 +183,15 @@ mailveil/
     │   ├── auth.ts                      # JWT + PIN verification (server-only)
     │   ├── api-auth.ts                  # Route handler auth guard
     │   ├── cloudflare.ts                # Cloudflare API client (server-only)
+    │   ├── rate-limit.ts                # Login rate limiter (in-memory)
+    │   ├── validation.ts                # API input validation
     │   ├── words.ts                     # Category word lists (7 categories x 30 words)
     │   ├── generator.ts                 # Email generation logic
+    │   ├── i18n/                        # i18n translations (en, ko)
     │   └── utils.ts                     # cn(), formatDate(), copyToClipboard()
     ├── hooks/
+    │   ├── use-rules.ts                 # Shared rules cache
+    │   ├── use-i18n.ts                  # i18n hook
     │   └── use-mobile.ts                # Mobile breakpoint detection
     └── types/
         ├── cloudflare.ts                # Cloudflare API response types
@@ -195,11 +200,15 @@ mailveil/
 
 ## Security
 
+- **Rate limiting** — Login endpoint: 5 attempts per IP per 15 minutes (HTTP 429)
 - **PIN authentication** with constant-time comparison to prevent timing attacks
-- **JWT tokens** (HS256, 24h expiry) stored in httpOnly cookies
-- **Dual-layer auth**: Edge Middleware + Route Handler guards (`requireAuth()`)
-- **Server-only modules**: Cloudflare API credentials never reach the client
-- **No API key exposure**: All Cloudflare API calls happen server-side
+- **JWT tokens** (HS256, 24h expiry) stored in httpOnly, strict SameSite cookies
+- **Dual-layer auth** — Edge Middleware + Route Handler guards (`requireAuth()`)
+- **Security headers** — CSP, X-Frame-Options (DENY), X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Input validation** — Email format, rule structure, and ID format validation on all API routes
+- **Error sanitization** — Cloudflare API errors logged server-side only; generic messages returned to client
+- **Server-only modules** — Cloudflare API credentials never reach the client
+- **Non-root Docker** — Runs as UID 1001 (nextjs user)
 
 ## License
 

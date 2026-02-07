@@ -184,10 +184,15 @@ mailveil/
     │   ├── auth.ts                      # JWT + PIN 검증 (server-only)
     │   ├── api-auth.ts                  # Route Handler 인증 가드
     │   ├── cloudflare.ts                # Cloudflare API 클라이언트 (server-only)
+    │   ├── rate-limit.ts                # 로그인 레이트 리밋 (인메모리)
+    │   ├── validation.ts                # API 입력 검증
     │   ├── words.ts                     # 카테고리별 단어 목록 (7개 x 30단어)
     │   ├── generator.ts                 # 이메일 생성 로직
+    │   ├── i18n/                        # 다국어 번역 (en, ko)
     │   └── utils.ts                     # cn(), formatDate(), copyToClipboard()
     ├── hooks/
+    │   ├── use-rules.ts                 # 규칙 캐시 공유 훅
+    │   ├── use-i18n.ts                  # 다국어 훅
     │   └── use-mobile.ts                # 모바일 감지 훅
     └── types/
         ├── cloudflare.ts                # Cloudflare API 응답 타입
@@ -196,11 +201,15 @@ mailveil/
 
 ## 보안
 
+- **레이트 리밋** — 로그인 엔드포인트: IP당 15분에 5회 제한 (HTTP 429)
 - **PIN 인증** — 타이밍 공격 방지를 위한 상수 시간 비교
-- **JWT 토큰** — HS256, 24시간 만료, httpOnly 쿠키 저장
+- **JWT 토큰** — HS256, 24시간 만료, httpOnly + strict SameSite 쿠키
 - **이중 인증 레이어** — Edge 미들웨어 + Route Handler 가드 (`requireAuth()`)
+- **보안 헤더** — CSP, X-Frame-Options (DENY), X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **입력 검증** — 이메일 형식, 규칙 구조, ID 형식 검증
+- **에러 정보 차단** — Cloudflare API 에러는 서버 로그에만 기록, 클라이언트에는 일반 메시지 반환
 - **서버 전용 모듈** — Cloudflare API 인증 정보가 클라이언트에 노출되지 않음
-- **API 키 비노출** — 모든 Cloudflare API 호출은 서버에서만 처리
+- **Non-root Docker** — UID 1001 (nextjs 사용자)로 실행
 
 ## 라이선스
 
