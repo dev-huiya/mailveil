@@ -10,8 +10,9 @@ export async function GET() {
     const data = await getCatchAll();
     return NextResponse.json(data);
   } catch (e) {
+    console.error("[API] cloudflare/catch-all:", (e as Error).message);
     return NextResponse.json(
-      { error: (e as Error).message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -26,8 +27,9 @@ export async function PUT(request: Request) {
     const data = await updateCatchAll(body);
     return NextResponse.json(data);
   } catch (e) {
+    console.error("[API] cloudflare/catch-all:", (e as Error).message);
     return NextResponse.json(
-      { error: (e as Error).message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

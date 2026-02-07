@@ -2,11 +2,22 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { randomBytes } from "crypto";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || randomBytes(32).toString("hex")
-);
+function getJwtSecretBytes(): Uint8Array {
+  return new TextEncoder().encode(
+    process.env.JWT_SECRET || randomBytes(32).toString("hex")
+  );
+}
 
-const AUTH_PIN = process.env.AUTH_PIN || "000000";
+function getAuthPin(): string {
+  const pin = process.env.AUTH_PIN;
+  if (!pin && process.env.NODE_ENV === "production" && !process.env.NEXT_PHASE) {
+    throw new Error("AUTH_PIN environment variable is required in production");
+  }
+  return pin || "000000";
+}
+
+const JWT_SECRET = getJwtSecretBytes();
+const AUTH_PIN = getAuthPin();
 
 export function getPinLength(): number {
   return AUTH_PIN.length;

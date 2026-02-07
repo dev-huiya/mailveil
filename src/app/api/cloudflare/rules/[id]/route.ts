@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { getRule, updateRule, deleteRule } from "@/lib/cloudflare";
+import { isValidId, validateUpdateRule } from "@/lib/validation";
 import type { UpdateRuleRequest } from "@/types/cloudflare";
 
 export async function GET(
@@ -12,11 +13,15 @@ export async function GET(
 
   try {
     const { id } = await params;
+    if (!isValidId(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
     const data = await getRule(id);
     return NextResponse.json(data);
   } catch (e) {
+    console.error("[API] cloudflare/rules/[id]:", (e as Error).message);
     return NextResponse.json(
-      { error: (e as Error).message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -31,12 +36,20 @@ export async function PUT(
 
   try {
     const { id } = await params;
-    const body: UpdateRuleRequest = await request.json();
-    const data = await updateRule(id, body);
+    if (!isValidId(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+    const body = await request.json();
+    const error = validateUpdateRule(body);
+    if (error) {
+      return NextResponse.json({ error }, { status: 400 });
+    }
+    const data = await updateRule(id, body as UpdateRuleRequest);
     return NextResponse.json(data);
   } catch (e) {
+    console.error("[API] cloudflare/rules/[id]:", (e as Error).message);
     return NextResponse.json(
-      { error: (e as Error).message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -51,11 +64,15 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    if (!isValidId(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
     const data = await deleteRule(id);
     return NextResponse.json(data);
   } catch (e) {
+    console.error("[API] cloudflare/rules/[id]:", (e as Error).message);
     return NextResponse.json(
-      { error: (e as Error).message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
