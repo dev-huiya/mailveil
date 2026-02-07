@@ -1,0 +1,121 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PinInput } from "@/components/login/pin-input";
+import { ShuffleKeypad } from "@/components/login/shuffle-keypad";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Shield } from "lucide-react";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const isMobile = useIsMobile();
+  const [pin, setPin] = useState("");
+  const [pinLength, setPinLength] = useState(6);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/pin-length")
+      .then((res) => res.json())
+      .then((data) => {
+        setPinLength(data.length);
+        setReady(true);
+      })
+      .catch(() => setReady(true));
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (submittedPin: string) => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin: submittedPin }),
+        });
+
+        if (res.ok) {
+          router.push("/");
+        } else {
+          setError("Invalid PIN");
+          setPin("");
+        }
+      } catch {
+        setError("Connection error");
+        setPin("");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [router]
+  );
+
+  const handleMobileDigit = useCallback(
+    (digit: string) => {
+      const newPin = pin + digit;
+      if (newPin.length <= pinLength) {
+        setPin(newPin);
+        setError("");
+        if (newPin.length === pinLength) {
+          handleSubmit(newPin);
+        }
+      }
+    },
+    [pin, pinLength, handleSubmit]
+  );
+
+  const handleBackspace = useCallback(() => {
+    setPin((prev) => prev.slice(0, -1));
+    setError("");
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Shield className="w-6 h-6 text-primary" />
+          </div>
+          <CardTitle className="text-2xl">MailVeil</CardTitle>
+          <p className="text-muted-foreground text-sm">
+            Enter your PIN to continue
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <PinInput
+            length={pinLength}
+            value={pin}
+            onChange={setPin}
+            onComplete={handleSubmit}
+            disabled={loading}
+          />
+
+          {error && (
+            <p className="text-center text-sm text-destructive">{error}</p>
+          )}
+
+          {isMobile && (
+            <ShuffleKeypad
+              onDigit={handleMobileDigit}
+              onBackspace={handleBackspace}
+              disabled={loading}
+            />
+          )}
+
+          {!isMobile && (
+            <p className="text-center text-xs text-muted-foreground">
+              Type your PIN using the keyboard
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
