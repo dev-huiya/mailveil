@@ -49,7 +49,7 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
             const isActive =
               item.href === "/"
                 ? pathname === "/"
-                : pathname.startsWith(item.href);
+                : pathname === item.href;
             return (
               <Link
                 key={item.href}
