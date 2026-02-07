@@ -100,14 +100,31 @@ The app will be available at `http://localhost:3000`.
 | `AUTH_PIN` | Yes | Numeric PIN for login authentication. Can be any length — the UI adapts automatically. |
 | `JWT_SECRET` | Yes | Secret key for JWT signing. Use a strong random string (32+ characters). |
 | `CF_API_TOKEN` | Yes | Cloudflare API token with Email Routing edit permissions. |
-| `CF_ZONE_ID` | Yes | Cloudflare Zone ID for your domain. |
-| `CF_ACCOUNT_ID` | Yes | Cloudflare Account ID. |
+| `CF_ZONE_ID` | Yes | Cloudflare Zone ID — identifies which domain's email routing rules to manage. |
+| `CF_ACCOUNT_ID` | Yes | Cloudflare Account ID — identifies which account's destination addresses to manage. |
 | `NEXT_PUBLIC_EMAIL_DOMAIN` | Yes | The email domain for generated addresses (e.g., `example.com`). |
+
+> **Why are all three Cloudflare values needed?**
+>
+> The API token only handles *authentication* (proving who you are). It doesn't specify *which* zone or account to operate on. Cloudflare's API requires the Zone ID and Account ID in the URL path:
+> - **Zone ID** — Used for rule and routing operations: `/zones/{zone_id}/email/routing/rules`
+> - **Account ID** — Used for destination address operations: `/accounts/{account_id}/email/routing/addresses`
+>
+> Without these IDs, the API calls will fail.
 
 ### Getting Cloudflare Credentials
 
-1. **API Token**: Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) > Create Token > Custom Token > Permissions: `Zone > Email Routing Rules > Edit`, `Account > Email Routing Addresses > Edit`
-2. **Zone ID & Account ID**: Go to your domain in Cloudflare dashboard > Overview page > right sidebar under "API"
+All three values can be found in the Cloudflare dashboard:
+
+1. **API Token**
+   - Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+   - Click **Create Token** > **Custom Token**
+   - Add the permissions listed below and save
+
+2. **Zone ID & Account ID**
+   - Go to your domain in the Cloudflare dashboard
+   - Open the **Overview** page
+   - Both IDs are in the right sidebar under the **API** section
 
 ### Cloudflare API Token Permissions
 

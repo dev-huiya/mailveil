@@ -101,14 +101,31 @@ docker run -d -p 3000:3000 --env-file .env mailveil
 | `AUTH_PIN` | O | 로그인용 숫자 PIN. 자릿수에 맞춰 UI가 자동으로 구성됩니다. |
 | `JWT_SECRET` | O | JWT 서명 키. 32자 이상의 랜덤 문자열을 사용하세요. |
 | `CF_API_TOKEN` | O | Cloudflare API 토큰. Email Routing 편집 권한이 필요합니다. |
-| `CF_ZONE_ID` | O | Cloudflare Zone ID. |
-| `CF_ACCOUNT_ID` | O | Cloudflare Account ID. |
+| `CF_ZONE_ID` | O | Cloudflare Zone ID — 어떤 도메인의 이메일 라우팅 규칙을 관리할지 지정합니다. |
+| `CF_ACCOUNT_ID` | O | Cloudflare Account ID — 어떤 계정의 수신 주소를 관리할지 지정합니다. |
 | `NEXT_PUBLIC_EMAIL_DOMAIN` | O | 생성할 이메일의 도메인 (예: `example.com`). |
+
+> **왜 Cloudflare 값이 3개나 필요한가요?**
+>
+> API 토큰은 *인증*(누구인지 증명)만 담당합니다. *어떤* 존이나 계정에 요청할지는 지정하지 않습니다. Cloudflare API는 URL 경로에 Zone ID와 Account ID를 포함해야 합니다:
+> - **Zone ID** — 규칙 및 라우팅 조작에 사용: `/zones/{zone_id}/email/routing/rules`
+> - **Account ID** — 수신 주소 조작에 사용: `/accounts/{account_id}/email/routing/addresses`
+>
+> 이 ID 없이는 API 호출이 실패합니다.
 
 ### Cloudflare 인증 정보 얻기
 
-1. **API 토큰**: [Cloudflare API 토큰](https://dash.cloudflare.com/profile/api-tokens) > 토큰 생성 > 사용자 정의 토큰 > 권한: `Zone > Email Routing Rules > Edit`, `Account > Email Routing Addresses > Edit`
-2. **Zone ID & Account ID**: Cloudflare 대시보드에서 도메인 선택 > 개요 페이지 > 오른쪽 사이드바 "API" 섹션
+세 값 모두 Cloudflare 대시보드에서 확인할 수 있습니다:
+
+1. **API 토큰**
+   - [Cloudflare API 토큰](https://dash.cloudflare.com/profile/api-tokens) 페이지로 이동
+   - **토큰 생성** > **사용자 정의 토큰** 클릭
+   - 아래 표의 권한을 추가하고 저장
+
+2. **Zone ID & Account ID**
+   - Cloudflare 대시보드에서 도메인 선택
+   - **개요** 페이지 열기
+   - 오른쪽 사이드바 **API** 섹션에 두 ID가 모두 표시됩니다
 
 ### Cloudflare API 토큰 권한
 
