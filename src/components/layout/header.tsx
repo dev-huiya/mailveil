@@ -16,7 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Moon, Sun, LogOut, Globe, Check } from "lucide-react";
+import { Moon, Sun, LogOut, Globe, Check, Shield } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import { locales, localeNames, type Locale } from "@/lib/i18n/translations";
 import { VisuallyHidden } from "radix-ui";
@@ -35,6 +35,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 flex items-center gap-4 border-b bg-card px-4 md:px-6 pt-safe" style={{ minHeight: "calc(3.5rem + env(safe-area-inset-top, 0px))" }}>
+      {/* Logo — Mobile only (desktop has sidebar) */}
+      <div className="flex items-center gap-2 md:hidden">
+        <Shield className="h-5 w-5 text-primary" />
+        <span className="font-semibold text-sm">MailVeil</span>
+      </div>
       <div className="flex-1" />
 
       {/* Language — Desktop: DropdownMenu */}
