@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
+import { useEmailDomain } from "@/hooks/use-email-domain";
 import type { TranslationKey } from "@/lib/i18n/translations";
 import {
   LayoutDashboard,
@@ -25,6 +26,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useI18n();
+  const emailDomain = useEmailDomain();
 
   return (
     <aside className="hidden md:flex h-dvh w-64 flex-col border-r bg-card pt-safe pb-safe">
@@ -57,7 +59,7 @@ export function Sidebar() {
       </nav>
       <div className="border-t p-4">
         <p className="text-xs text-muted-foreground">
-          {process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com"}
+          {emailDomain}
         </p>
       </div>
     </aside>

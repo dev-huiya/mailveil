@@ -60,7 +60,7 @@ AUTH_PIN=000000                          # Login PIN (any length)
 CF_API_TOKEN=your-cloudflare-api-token   # Cloudflare API token
 CF_ZONE_ID=your-zone-id                 # Cloudflare Zone ID
 CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
-NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # Your email domain
+EMAIL_DOMAIN=example.com                # Email domain
 ```
 
 Run:
@@ -118,7 +118,7 @@ pnpm start
 | `CF_API_TOKEN` | Yes | Cloudflare API token with Email Routing edit permissions. |
 | `CF_ZONE_ID` | Yes | Cloudflare Zone ID — which domain's routing rules to manage. |
 | `CF_ACCOUNT_ID` | Yes | Cloudflare Account ID — which account's destination addresses to manage. |
-| `NEXT_PUBLIC_EMAIL_DOMAIN` | Yes | The email domain for generated aliases (e.g., `example.com`). |
+| `EMAIL_DOMAIN` | Yes | The email domain for generated aliases (e.g., `example.com`). |
 | `JWT_SECRET` | No | JWT signing key. **Auto-generated on startup if not set.** Set this to persist login sessions across container restarts. |
 
 <details>

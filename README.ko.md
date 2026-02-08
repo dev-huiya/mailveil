@@ -60,7 +60,7 @@ AUTH_PIN=000000                          # 로그인 PIN (자릿수 자유)
 CF_API_TOKEN=your-cloudflare-api-token   # Cloudflare API 토큰
 CF_ZONE_ID=your-zone-id                 # Cloudflare Zone ID
 CF_ACCOUNT_ID=your-account-id           # Cloudflare Account ID
-NEXT_PUBLIC_EMAIL_DOMAIN=example.com     # 이메일 도메인
+EMAIL_DOMAIN=example.com                # 이메일 도메인
 ```
 
 실행:
@@ -118,7 +118,7 @@ pnpm start
 | `CF_API_TOKEN` | O | Cloudflare API 토큰. Email Routing 편집 권한 필요. |
 | `CF_ZONE_ID` | O | Cloudflare Zone ID — 어떤 도메인의 라우팅 규칙을 관리할지 지정. |
 | `CF_ACCOUNT_ID` | O | Cloudflare Account ID — 어떤 계정의 수신 주소를 관리할지 지정. |
-| `NEXT_PUBLIC_EMAIL_DOMAIN` | O | 생성할 이메일의 도메인 (예: `example.com`). |
+| `EMAIL_DOMAIN` | O | 생성할 이메일의 도메인 (예: `example.com`). |
 | `JWT_SECRET` | X | JWT 서명 키. **미설정 시 서버 시작 때 자동 생성.** 컨테이너 재시작 후에도 로그인 세션을 유지하려면 설정하세요. |
 
 <details>

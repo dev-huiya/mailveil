@@ -23,16 +23,16 @@ import {
 } from "@/lib/generator";
 import { toast } from "sonner";
 import { useI18n } from "@/hooks/use-i18n";
+import { useEmailDomain } from "@/hooks/use-email-domain";
 import { useRules, invalidateRulesCache } from "@/hooks/use-rules";
 import type { TranslationKey } from "@/lib/i18n/translations";
 import type { Destination } from "@/types/cloudflare";
 import { RefreshCw } from "lucide-react";
 
-const EMAIL_DOMAIN = process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
-
 export function GeneratorForm() {
   const router = useRouter();
   const { t } = useI18n();
+  const emailDomain = useEmailDomain();
   const { existingEmails } = useRules();
   const [category, setCategory] = useState("general");
   const [generated, setGenerated] = useState<{
@@ -67,14 +67,14 @@ export function GeneratorForm() {
   }, [t]);
 
   const handleRefresh = useCallback((excludeSeeds?: Set<string>) => {
-    const result = generateEmailSuggestions(category, EMAIL_DOMAIN, excludeSeeds, existingEmails);
+    const result = generateEmailSuggestions(category, emailDomain, excludeSeeds, existingEmails);
     setGenerated(result);
     setSelectedEmail(result.suggestions[0]?.email ?? null);
     if (result.suggestions[0]) {
       const s = result.suggestions[0];
       setRuleName(generateRuleName(result.category.name, s.seed, s.suffix));
     }
-  }, [category, existingEmails]);
+  }, [category, emailDomain, existingEmails]);
 
   useEffect(() => {
     handleRefresh();
@@ -95,7 +95,7 @@ export function GeneratorForm() {
   };
 
   const emailAddress = manualMode
-    ? `${manualEmail}@${EMAIL_DOMAIN}`
+    ? `${manualEmail}@${emailDomain}`
     : selectedEmail ?? "";
 
   const handleCreate = async () => {
@@ -167,7 +167,7 @@ export function GeneratorForm() {
           placeholder="custom.address"
         />
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          @{EMAIL_DOMAIN}
+          @{emailDomain}
         </span>
       </div>
     </div>

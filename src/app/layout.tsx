@@ -50,11 +50,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const emailDomain =
+    process.env.EMAIL_DOMAIN || process.env.NEXT_PUBLIC_EMAIL_DOMAIN || "example.com";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__ENV__={emailDomain:${JSON.stringify(emailDomain)}}`,
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
