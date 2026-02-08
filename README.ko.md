@@ -9,6 +9,7 @@
 Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이메일 주소를 생성하고,
 포워딩 규칙과 수신 주소를 한곳에서 관리하세요.
 
+[![GitHub](https://img.shields.io/badge/GitHub-repo-181717?logo=github&logoColor=white)](https://github.com/dev-huiya/mailveil)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
