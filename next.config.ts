@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDemoMode = process.env.DEMO_MODE === "true";
+
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -21,6 +23,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  ...(isDemoMode && {
+    turbopack: {
+      resolveAlias: {
+        "@/lib/cloudflare": "@/lib/cloudflare.mock",
+        "@/lib/auth": "@/lib/auth.mock",
+        "@/lib/api-auth": "@/lib/api-auth.mock",
+        "@/lib/rate-limit": "@/lib/rate-limit.mock",
+      },
+    },
+  }),
 };
 
 export default nextConfig;
