@@ -6,7 +6,7 @@
 
 **Cloudflare Email Routing을 위한 셀프호스팅 가상 이메일 관리 UI**
 
-Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이메일 주소를 생성하고,
+Cloudflare 대시보드 없이 `word.word@example.com` 형식의 일회용 이메일 주소를 생성하고,
 포워딩 규칙과 수신 주소를 한곳에서 관리하세요.
 
 [![GitHub](https://img.shields.io/badge/GitHub-repo-181717?logo=github&logoColor=white)](https://github.com/dev-huiya/mailveil)
@@ -20,9 +20,37 @@ Cloudflare 대시보드 없이 `단어.단어@도메인` 형식의 일회용 이
 
 ---
 
+## About
+
+MailVeil은 이메일 서비스를 제공하지 않습니다.  
+대신, 이미 가지고 있는 도메인과 Cloudflare Email Routing을  
+더 편하게 관리하기 위한 웹 UI입니다.
+
+Cloudflare Email Routing은 강력하지만 일회용 주소를 만들고 관리하기에는 번거롭습니다.  
+MailVeil은 이 불편함을 줄이기 위해 만들어졌습니다.
+
+일회용 주소를 자동 추천을 통해 빠르고 쉽게 생성할 수 있습니다.  
+추천 받은 주소 중에서 하나 고르기만 하면 돼요.
+
+메일은 MailVeil을 거치지 않습니다.  
+저장하지도, 읽지도, 중계하지도 않습니다.  
+모든 메일은 Cloudflare를 통해 직접 전달됩니다.
+
+🔗 **Live Demo:** https://mailveil-demo.huiya.me  
+(PIN: `123456`, 읽기 전용 / 저장된 데이터는 임시 저장임)
+
+## What MailVeil Is (and Is Not)
+
+- ✅ **도메인을 직접 소유한 사용자**를 위한 도구입니다.
+- ✅ Cloudflare Email Routing을 사용하는 것을 전제로 합니다.
+- ❌ 자체 이메일 서버나 릴레이 서비스를 제공하지 않습니다.
+- ❌ 메일 내용을 저장하거나 처리하지 않습니다.
+
+MailVeil은 이메일 인프라가 아니라 **이메일 라우팅을 관리하는 인터페이스**입니다.
+
 ## 주요 기능
 
-- **주소 생성** — 8개 테마 카테고리 → `단어.단어@example.com` 일회용 주소 즉시 생성
+- **랜덤 주소 추천** — 8개 테마 카테고리 → `word.word@example.com` 일회용 주소를 자동으로 즉시 추천
 - **규칙 관리** — 생성, 검색, 이름 변경, 활성/비활성 토글, JSON 내보내기, 삭제
 - **전달 주소** — 포워딩 대상 추가, 인증, 기본 설정, 삭제
 - **Catch-all & 라우팅** — 미등록 주소 전달/삭제, Email Routing 켜기/끄기

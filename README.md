@@ -20,9 +20,35 @@ and control destination addresses — without ever touching the Cloudflare dashb
 
 ---
 
+
+## About
+
+MailVeil does not provide an email service.  
+Instead, it is a web UI designed to make managing **your existing domain and Cloudflare Email Routing** more convenient.  
+
+Cloudflare Email Routing is powerful, but it's cumbersome to create and manage disposable addresses.  
+MailVeil was created to reduce this inconvenience.
+
+You can quickly and easily generate disposable addresses through automatic recommendations.  
+Simply choose one from the recommended addresses.
+
+Email does not pass through MailVeil.  
+We do not store, read, or relay it.  
+All email is delivered directly via Cloudflare.
+
+🔗 **Live Demo:** https://mailveil-demo.huiya.me  
+(PIN: `123456`, read-only / stored data is temporary)
+
+## What MailVeil Is (and Is Not)
+- ✅ It is a tool for **users who directly own a domain**.
+- ✅ It assumes you are using Cloudflare Email Routing.
+- ❌ It does not provide its own email servers or relay services.
+- ❌ It does not store or process email content.
+MailVeil is not email infrastructure; it is an **interface for managing email routing**.
+
 ## Features
 
-- **Alias generator** — 8 themed categories → `word.word@example.com` disposable addresses
+- **Random Alias generator** — 8 theme categories → Automatically recommends disposable addresses like `word.word@example.com` instantly
 - **Rule management** — Create, search, rename, toggle, export (JSON), delete
 - **Forwarding inboxes** — Add, verify, set default, remove destination addresses
 - **Catch-all & routing** — Forward/drop unregistered addresses, enable/disable Email Routing
